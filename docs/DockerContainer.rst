@@ -4,7 +4,7 @@ Running ``alpyperl`` in a docker container
 
 If you are planning to develop your project in a **docker container**, you must be aware of the following:
 
-* Connection between **python** and **AnyLogic** will potentially fail. This is due to *alpyperl* trying to connect to a port that is not mapped between the **docker container** and **docker host**.
+* Connection between **python** and **AnyLogic** will potentially **fail**. This is due to *alpyperl* trying to connect to a port that is not mapped between the **docker container** and **docker host**.
 * Howerver, this is possible when running with an **exported model** as execution of the model will take place in the container. In the terminal, AnyLogic will share the port in case you want to access the model UI.
 
     .. code-block:: console

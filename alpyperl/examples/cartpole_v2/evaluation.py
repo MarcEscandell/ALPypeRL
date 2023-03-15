@@ -7,6 +7,6 @@ from ray.rllib.algorithms.ppo import PPOConfig
 launch_policy_server(
     policy_config=PPOConfig(),
     env=CartPoleEnv,
-    trained_policy_loc='./resources/trained_policies/cartpole_v2/checkpoint_000012',
+    trained_policy_loc='./resources/trained_policies/cartpole_v2/checkpoint_000010',
     port=3000
 )

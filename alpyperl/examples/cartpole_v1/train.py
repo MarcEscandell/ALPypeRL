@@ -22,7 +22,7 @@ policy = (
     .build()
 )
 
-for _ in range(11):
+for _ in range(10):
     result = policy.train()
 
 checkpoint_dir = policy.save("./resources/trained_policies/cartpole_v1")

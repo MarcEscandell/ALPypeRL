@@ -1,4 +1,4 @@
-from alpyperl.examples.cartpole_v2 import CartPoleEnv
+from alpyperl.examples.cartpole_v2.cartpole_env import CartPoleEnv
 import gymnasium as gym
 from gymnasium import register
 

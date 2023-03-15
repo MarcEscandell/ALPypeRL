@@ -21,6 +21,7 @@ Welcome to **ALPypeRL** documentation!
    :maxdepth: 1
    :caption: Advanced:
 
+   RunFromAnyLogic
    DockerContainer
    ScaleTraining
    CommonIssues
