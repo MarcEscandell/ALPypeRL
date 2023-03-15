@@ -65,7 +65,7 @@ class ALModelLauncher():
             self.exec_loc = self.__create_exec_file('windows.bat')
             # Execute model
             self.al_process = (
-                Popen(['start', 'cmd.exe', '/c', self.exec_loc])
+                Popen(['start', 'cmd.exe', '/c', self.exec_loc], shell=True)
                 if self.show_terminals 
                 else Popen([self.exec_loc])
             )
