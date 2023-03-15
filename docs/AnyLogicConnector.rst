@@ -41,6 +41,16 @@ Drag and drop an instance of **ALPypeRLConnector**
 
 Now that you have access to the **ALPypeRL Connector** from AnyLogic, you can proceed to drag and drop and instance of it into your model.
 
+.. warning::
+    Unfortunately, when creating a *custom library* in AnyLogic, the **additional dependencies** are not included in the package. While that remains a problem, you are asked to **include them manually**. 
+
+    You can download all the dependencies `here <https://github.com/MarcEscandell/ALPypeRL/tree/main/bin/lib>`_.
+    
+    Just click your project on the *Projects* tab and go to *Properties*. There you can add other dependencies manually at *Jar files and class folders required to build the model* as shown in the image:
+
+    .. image:: images/alpyperl_dependencies.png
+        :alt: ALPypeRL jar dependencies
+
 Here it is very important that you place the connector in your **root** agent. If you are not familiar with AnyLogic, the root agent is the one that normally holds and compiles the rest of the objects in your simulation (it's like the *home* for everything else).
 
 .. tip:: 
