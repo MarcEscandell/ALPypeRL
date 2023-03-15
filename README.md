@@ -68,7 +68,8 @@ policy = (
         env_config={
             'run_exported_model': True,
             'exported_model_loc': './resources/exported_models/cartpole_v0',
-            'show_terminals': False
+            'show_terminals': False,
+            'verbose': False
         }
     )
     .build()
@@ -90,7 +91,7 @@ The evaluation of your _trained policy_ is made simple in **alpyperl**. See the 
 
 ```python
 from alpyperl.serve.rllib import launch_policy_server
-from alpyperl.examples.cartpole_v0.cartpole_env import CartPoleEnv
+from alpyperl.examples.cartpole_v0 import CartPoleEnv
 from ray.rllib.algorithms.ppo import PPOConfig
 
 
@@ -106,7 +107,7 @@ Once the server is on, you can run your AnyLogic model and test your trained pol
 
 ## Bugs and/or development roadmap
 
-At the moment, ALPypeRL is at its earliest stage. You can join the [alpyperl project](https://github.com/users/MarcEscandell/projects/1) and raise bugs, feature requests or submit code enhancements via pull request.
+At the moment, ALPypeRL is at its earliest stage. You can join the [alpyperl project](https://github.com/MarcEscandell/ALPypeRL/discussions) and raise bugs, feature requests or submit code enhancements via pull request.
 
 ## Support ALPypeRL's development
 

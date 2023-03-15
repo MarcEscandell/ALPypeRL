@@ -13,21 +13,16 @@ def create_custom_env(action_space, observation_space, env_config: dict=None):
     :type observation_space: gymnasium.spaces.Box
     :param env_config: Environment configuration which includes:
 
-        * ``'run_exported_model'``: In case you want to run an exported version
-        of the model. Otherwise it will wait for the AnyLogic model to connect.
-
-        * ``'exported_model_loc'``: The location of the exported model folder.
-
-        * ``'show_terminals'``: This only applies if running an exported model
-        and the user wants a terminal to be launched for every model instance 
-        (could be useful for debugging purposes).
-
+        * ``'run_exported_model'``: In case you want to run an exported version 
+          of the model. Otherwise it will wait for the AnyLogic model to connect. 
+        * ``'exported_model_loc'``: The location of the exported model folder. 
+        * ``'show_terminals'``: This only applies if running an exported model 
+          and the user wants a terminal to be launched for every model instance 
+          (could be useful for debugging purposes).
         * ``'server_mode_on'``: This is for internal use only. It is used to 
-        flag the AnyLogic model to not be launched when serving a trained policy.
-        
-        * ``'verbose'``: To be activated in case DEBUG logger wants to be 
-        activated.
-
+          flag the AnyLogic model to not be launched when serving a trained policy. 
+        * ``'verbose'``: To be activated in case DEBUG logger wants to be activated. 
+            
     :type env_config: dict
 
     :return: Returns a class definition of your custom environment with the 
@@ -71,22 +66,21 @@ class BaseAnyLogicEnv(gym.Env):
 
         :param env_config: Environment configuration which includes:
 
-            * ``'run_exported_model'``: In case you want to run an exported version
-            of the model. Otherwise it will wait for the AnyLogic model to connect.
-
-            * ``'exported_model_loc'``: The location of the exported model folder.
-
-            * ``'show_terminals'``: This only applies if running an exported model
-            and the user wants a terminal to be launched for every model instance 
-            (could be useful for debugging purposes).
-
-            * ``'server_mode_on'``: This is for internal use only. It is used to 
-            flag the AnyLogic model to not be launched when serving a trained policy.
-            
+            * ``'run_exported_model'``: In case you want to run an exported 
+              version of the model. Otherwise it will wait for the AnyLogic 
+              model to connect. 
+            * ``'exported_model_loc'``: The location of the exported model folder. 
+            * ``'show_terminals'``: This only applies if running an exported 
+              model and the user wants a terminal to be launched for every 
+              model instance (could be useful for debugging purposes). 
+            * ``'server_mode_on'``: This is for internal use only. It is used 
+              to flag the AnyLogic model to not be launched when serving a 
+              trained policy. 
             * ``'verbose'``: To be activated in case DEBUG logger wants to be 
-            activated.
+              activated. 
 
         :type env_config: dict
+        
         """
         # Initialise `env_config` to avoid problems when handling `None`
         self.env_config = env_config if env_config is not None else []

@@ -5,17 +5,17 @@ The AnyLogic Connector
 In this page you will learn how to setup your connection from the **AnyLogic side**. To make the explanation more straightforward, we will be using the :ref:`CartPole-v0 example<How to train your first policy. The CartPole-v0 example.>`.
 
 .. note::
-    You may find the source code of the *CartPole-v0* `here <https://github.com/MarcEscandell/ALPypeRL/tree/main/alpyperl/examples/cartpole_v0/CartPole_v0>`_.
+    You may find the source code of the *CartPole-v0* `here <https://github.com/MarcEscandell/ALPypeRL/tree/main/alpyperl/examples/cartpole_v0/CartPole_v0>`__.
 
 The summary of steps required to follow are:
 
 1. Add **ALPypeRL Connector Library** to your *AnyLogic Palette*.
 2. Drag and drop an instance of **ALPypeConnector** to your **root** (also defaulted as ``Main`` the first time you create a model).
-3. Add **ALPypeRLClientController** interface to the list of interfaces in your **root** agent and **implement** the required functions.
-4. Call `requestAction` when the RL agent in the simulation requires a new action (or a new instruction) to continue with the run.
+3. Add ``ALPypeRLClientController`` interface to the list of interfaces in your **root** agent and **implement** the required functions.
+4. Call ``requestAction`` when the RL agent in the simulation requires a new action (or a new instruction) to continue with the run.
 
 **************************************************************
-Add **ALPypeRLConnector** library to your **AnyLogic Palette**
+Add ``ALPypeRLConnector`` library to your **AnyLogic Palette**
 **************************************************************
 
 The first thing that you must do is to add the **ALPypeRL Connector Library** to your AnyLogic *Palette*.
@@ -35,16 +35,16 @@ You should now be able to see the newely added library in your list of available
 .. image:: images/alpyperlconnector_library.png
     :alt: ALPypeRL library in Palette
 
-**************************************************
-Drag and drop an instance of **ALPypeRLConnector**
-**************************************************
+***************************************************
+Drag and drop an instance of ``ALPypeRLConnector``
+***************************************************
 
 Now that you have access to the **ALPypeRL Connector** from AnyLogic, you can proceed to drag and drop and instance of it into your model.
 
 .. warning::
     Unfortunately, when creating a *custom library* in AnyLogic, the **additional dependencies** are not included in the package. While that remains a problem, you are asked to **include them manually**. 
 
-    You can download all the dependencies `here <https://github.com/MarcEscandell/ALPypeRL/tree/main/bin/lib>`_.
+    You can download all the dependencies `here <https://github.com/MarcEscandell/ALPypeRL/tree/main/bin/lib>`__.
     
     Just click your project on the *Projects* tab and go to *Properties*. There you can add other dependencies manually at *Jar files and class folders required to build the model* as shown in the image:
 
@@ -59,9 +59,9 @@ Here it is very important that you place the connector in your **root** agent. I
     .. image:: images/root_agent.png
         :alt: AnyLogic root agent
 
-************************************
-Implement `ALPypeRLClientController`
-************************************
+**************************************
+Implement ``ALPypeRLClientController``
+**************************************
 
 This is a very important step in order for the *ALPypeRL Connector* to understand what it needs to do when the training starts or when you are evaluating your policy.
 
@@ -82,7 +82,7 @@ You can now drag and drop 4 new functions. Their arguments and return types must
 * ``void takeAction(ActionSpace action)``: Here you must tell the model what to do or how to apply the action that is comming as an argument. 
 
     .. note::
-        The **action type must match** what you have (or will define) in your **python script**. Refer to :ref:`Gym Action and Observation spaces <Create an *Action* and *Observation* spaces>`.
+        The **action type must match** what you have (or will define) in your **python script**. Refer to :ref:`Gym Action and Observation spaces <Create the *Action* and *Observation* spaces>`.
 
 * ``double[] getObservation()``: Return the observation seen at that moment in time in the form of a ``double[]`` array.
 
@@ -95,9 +95,9 @@ You can now drag and drop 4 new functions. Their arguments and return types must
 .. image:: images/interface_impl.png
     :alt: Interface implementation
 
-******************************************************************************
-Call `requestAction` when the RL agent in the simulation requires a new action
-******************************************************************************
+*********************************************************************************
+Call ``requestAction`` when the RL agent in the simulation requires a new action
+*********************************************************************************
 
 .. important::
     In this last step, you simply must **call** ``requestAction()`` **at the location where your agent will need to receive an action** so it can proceed.

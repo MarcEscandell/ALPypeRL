@@ -4,14 +4,26 @@ ALPypeRL
 
 **ALPypeRL** or *AnyLogic Python Pipe for Reinforcement Learning* is an open source library that will allow you to create and run RL experiments using simulations build in the AnyLogic software. With this package, the user can dedicate their time to what it matters: building the right playground (AnyLogic simulation) for the RL policy to learn appropriately.
 
+***********
+Features
+***********
+With **ALPypeRL** you will be able to:
+
+* Connect your AnyLogic model to a reinforcement learning framework of your choise (e.g. ray ``rllib``).
+* Scale your training by launching many AnyLogic models simultaneously (*requires an exported model*).
+* Deploy and evaluate your trained policy from AnyLogic.
+* Debug your AnyLogic models during training (*this is a special feature unique to ALPypeRL that improves the user experience during model debugging remarkably*).
+* Leverage on the AnyLogic rich visualization while training or evaluating (*which ties to the previous bullet point*).
+
+
 ************
 Environments
 ************
 
-*ALPypeRL* includes 2 environments that make the connection between AnyLogic and your python scrip possible:
+*ALPypeRL* includes 2 environments that make the **connection between AnyLogic and your python scrip** possible:
 
-* :ref:`ALPypeRLConnector<The AnyLogic Connector>`. The **AnyLogic connector** ('agent') library to be dropped into your simulation model.
-* :ref:`alpyperl<How to train your first policy. The CartPole-v0 example.>`. This environment includes functionalities to **train** and **evaluate** *RL policies* in **python**. 
+* :ref:`ALPypeRLConnector<The AnyLogic Connector>`. The **AnyLogic connector** library to be dropped into your simulation model.
+* :ref:`alpyperl<How to train your first policy. The CartPole-v0 example.>`. The library that you will use after configuring your policy in your python script to connect to the AnyLogic model (includes functionalities to **train** and **evaluate**). 
 
 ************
 Installation
@@ -26,7 +38,7 @@ Installation
     .. warning::
         **The** ``ALPypeRLConnector`` **requires additional configuration steps!** It is not enougth to drag and drop an instance. Please read the :ref:`documentation<The AnyLogic Connector>`.
 
-* To install the base **ALPypeRL** library in python, use:
+* To install the base **alpyperl** library in python, use:
 
     .. code-block:: console
         
@@ -52,13 +64,13 @@ Requirements
 General architecture
 ********************
 
-The ALPypeRL library consists of 2 artifacts:
+The ALPypeRL library consists of 2 artifacts (as mentioned earlier):
 
-* The **ALPypeRL Connector** or **ENVIRONMENT**. If you are familiar with the AnyLogic terms, this object has been basically built from a base ``Agent``. It is in charge of creating a connection from the **java** side.
+* The **ALPypeRL Connector** or **ENVIRONMENT**. If you are familiar with the AnyLogic terms, this object has been basically built from a base ``Agent``. It is in charge of creating a connection from the **java** side. **AnyLogic** works as the platform to create environments to be used by the *policy*.
   
 * The python **alpyperl** package or **POLICY**. This library will create the connection from the **python** side. Also, you will find other capabilities such as policy deployment.
 
-Here there's an overall diagram to how ALPypeRL connection is built:
+Here there's an overall diagram to how *ALPypeRL* connection is built:
 
 .. image:: images/alpyperl_diagram.jpg
     :alt: ALPypeRL diagram
@@ -67,7 +79,7 @@ Here there's an overall diagram to how ALPypeRL connection is built:
 Reinforcement learning basics
 ******************************
 
-If you are new to Reinforcement Learning, in this page you'll learn some basics. Although, the best recommendation is to visit the `OpenAI Spinning Up <https://spinningup.openai.com/en/latest/>`_. It's probably the best free **educational** resource at the moment if you want to learn in deep detail how RL works.
+If you are new to Reinforcement Learning, the best recommendation is to visit the `OpenAI Spinning Up <https://spinningup.openai.com/en/latest/>`_. It's probably the best **free educational** resource at the moment to learn in detail how RL works.
 
 As explained in `wikipedia <https://en.wikipedia.org/wiki/Reinforcement_learning>`_:
 
@@ -82,10 +94,10 @@ As explained in `wikipedia <https://en.wikipedia.org/wiki/Reinforcement_learning
     :alt: RL diagram from wikipedia
     :align: center
 
-If we want to relate what has been explained to ALPypeRL we can say that:
+If you want to relate what has been explained to *ALPypeRL* we can say that:
 
-* The **intelligent agents that take decisions** are the *policies* trained (e.g. using **rllib**). You will need the python package **alpyperl** for dealing with agents. Agent/Policy learning happens in ALPypeRL on the *python* side.
-* The **environment** that is used as the *playground* for the policy to learn from via **observation** collection happens on the AnyLogic side. This is all connected thanks to the **ALPypeRLConnector** and the implementation of the required **ALPypeRLClientController** functions. A **reward** will be generated after taking an action. Then, the agent will try to maximize its cumulative value.
+* The **intelligent agents that take decisions** are the *policies* trained (e.g. using ``rllib``). You will need the python package ``alpyperl`` for dealing with agents. Agent/Policy learning happens in *ALPypeRL* on the *python* side.
+* The **environment** that is used as the *playground* for the policy to learn from via **observation** collection happens on the *AnyLogic* side. This is all connected thanks to the ``ALPypeRLConnector`` and the implementation of the required ``ALPypeRLClientController`` functions. A **reward** will be generated after taking an action. Then, the agent will try to maximize its cumulative value.
 
 Other references:
 
