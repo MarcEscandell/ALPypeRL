@@ -13,15 +13,15 @@ With ALPypeRL you will be able to:
 * Debug your AnyLogic models during training.
 * Leverage on the AnyLogic rich visualization while training or evaluating.
 
-There is a more detailed [documentation](https://github.com/MarcEscandell/ALPypeRL/wiki) that includes multiple examples to understand most the basic functionalities.
+There is a more detailed [documentation](https://alpyperl.readthedocs.io/en/latest/) that includes multiple examples to understand most the basic functionalities.
 
 _NOTE: ALPypeRL has been developed using **ray rllib** as the base RL framework. Ray rllib is an industry leading open source package for Reinforcement Learning. Because of that, ALPypeRL has certain dependencies to it (e.g. trained policy deployment and evaluation)._
 
 ## Environments
 
 ALPypeRL inculdes 2 environments that make the connection between AnyLogic and your python scrip possible:
-* [ALPypeRLConnector](https://github.com/MarcEscandell/ALPypeRL/wiki/AnyLogicConnector) - The AnyLogic connector ('agent') library to be dropped into your simulation model.
-* [alpyperl](https://github.com/MarcEscandell/ALPypeRL/wiki/CartPoleV0) - This environment includes functionalities to _train_ and _evaluate_ RL policies in python. 
+* [ALPypeRLConnector](https://alpyperl.readthedocs.io/en/latest/AnyLogicConnector.html) - The AnyLogic connector ('agent') library to be dropped into your simulation model.
+* [alpyperl](https://alpyperl.readthedocs.io/en/latest/CartPoleV0.html) - This environment includes functionalities to _train_ and _evaluate_ RL policies in python. 
 
 ## Installation
 
@@ -43,14 +43,14 @@ _Note that this is not a package that is currently backed by the AnyLogic suppor
 
 To be able to train your policy, you must have the following:
 
-* An **AnyLogic model** that requires decisions to be taken as the simulation runs. Using the [CartPole-v0](https://github.com/MarcEscandell/alpyperl/wiki) example, a decision must be taken on the direction of the force to be applied so the pole can be kept straight for as long as possible. For that, the AnyLogic model will be making requests to the **ALPypeRLConnector** and consuming the returned/suggested action.
+* An **AnyLogic model** that requires decisions to be taken as the simulation runs. Using the [CartPole-v0](https://alpyperl.readthedocs.io/en/latest/CartPoleV0.html) example, a decision must be taken on the direction of the force to be applied so the pole can be kept straight for as long as possible. For that, the AnyLogic model will be making requests to the **ALPypeRLConnector** and consuming the returned/suggested action.
 
 ![ALPypeRL Connector](resources/images/alpyperl_train_api.png)
 
-* A **python script** that contains the RL framework. Here is where the policy is going to be trained. For that, you will need to create your _custom environment_ taking into consideration what your AnyLogic model expects to return and receive. By default, you must define the _action_ and _observation_ spaces. Please visit the [CartPole-v0](https://github.com/MarcEscandell/alpyperl/wiki) example for a more detailed explanation.
+* A **python script** that contains the RL framework. Here is where the policy is going to be trained. For that, you will need to create your _custom environment_ taking into consideration what your AnyLogic model expects to return and receive. By default, you must define the _action_ and _observation_ spaces. Please visit the [CartPole-v0](https://alpyperl.readthedocs.io/en/latest/CartPoleV0.html) example for a more detailed explanation.
 
 ```python
-from alpyperl.examples.cartpole_v0.cartpole_env import CartPoleEnv
+from alpyperl.examples.cartpole_v0 import CartPoleEnv
 from ray.rllib.algorithms.ppo import PPOConfig
 
 
@@ -89,7 +89,7 @@ policy.stop()
 The evaluation of your _trained policy_ is made simple in **alpyperl**. See the example:
 
 ```python
-from alpyperl.serve.rllib.binder import launch_policy_server
+from alpyperl.serve.rllib import launch_policy_server
 from alpyperl.examples.cartpole_v0.cartpole_env import CartPoleEnv
 from ray.rllib.algorithms.ppo import PPOConfig
 
@@ -114,5 +114,5 @@ If you are financially able to do so and would like to support the development o
 
 ## License
 
-The ALPypeRL software suite is licensed under the terms of the Apache License 2.0. See [LICENSE](https://github.com/MarcEscandell/ALPypeRL/blob/main/LICENSE.txt) for more information.
+The ALPypeRL software suite is licensed under the terms of the Apache License 2.0. See [LICENSE](https://github.com/MarcEscandell/ALPypeRL/blob/main/LICENSE) for more information.
 
