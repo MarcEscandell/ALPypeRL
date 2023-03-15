@@ -6,11 +6,11 @@
 
 ![ALPypeRL GIF](resources/images/alpyperl_gif.gif)
 
-With ALPypeRL you will be able to:
+With _ALPypeRL_ you will be able to:
 * Connect your AnyLogic model to a reinforcement learning framework of your choise (e.g. ray `rllib`).
 * Scale your training by launching many AnyLogic models simultaneously (requires an exported model).
-* Deploy and evaluate your trained policy.
-* Debug your AnyLogic models during training.
+* Deploy and evaluate your trained policy from AnyLogic.
+* Debug your AnyLogic models during training (_this is unique to ALPypeRL_).
 * Leverage on the AnyLogic rich visualization while training or evaluating.
 
 There is a more detailed [documentation](https://alpyperl.readthedocs.io/en/latest/) that includes multiple examples to understand most the basic functionalities.
