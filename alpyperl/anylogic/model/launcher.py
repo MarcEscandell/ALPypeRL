@@ -6,6 +6,7 @@ import random
 import subprocess
 from subprocess import Popen
 from pathlib import Path
+import logging
 
 
 class ALModelLauncher():
@@ -21,6 +22,7 @@ class ALModelLauncher():
         folder_location='./exported_model',
         show_terminals=False
     ):
+        self.logger = logging.getLogger(__name__)
         # Check if exported model exists.
         if not os.path.exists(folder_location):
             raise Exception(
@@ -77,11 +79,16 @@ class ALModelLauncher():
                 if self.show_terminals 
                 else Popen([f'./{self.exec_loc}'])
             )
+        self.logger.debug(
+            f"AnyLogic model '{self.project_name}' has been succesfully "
+            "compiled and launched"
+        )
 
     def close_model(self):
         """ Delete model executable file and close process"""
         os.remove(self.exec_loc)
         self.al_process.terminate()
+        self.logger.debug("AnyLogic models have been terminated")
 
     def __get_project_name(self, folder_location):
         """ A function to extract the AnyLogic project name automatically based on

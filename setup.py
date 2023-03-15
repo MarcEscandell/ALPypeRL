@@ -6,7 +6,7 @@ this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
 setup(name='alpyperl',
-      version='0.0.13',
+      version='0.0.15',
       license='Apache License, Version 2.0',
       author='Marc Escandell Mari',
       author_email='marcescandellmari@gmail.com',
@@ -20,7 +20,7 @@ setup(name='alpyperl',
             'gymnasium',
             'py4j',
             'ray',
-            'ray[rllib]',
+            'ray[rllib]>=2.3.0',
             'tensorflow',
             'torch',
             'uvicorn',

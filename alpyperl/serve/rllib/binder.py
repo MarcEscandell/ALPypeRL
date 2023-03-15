@@ -17,6 +17,25 @@ def launch_policy_server(
     """Launch server and host trained policy to allow requests. The server
     requires an observation in the form of an array and will return and action
     (type depends on action space)
+
+    :param policy_config: It refers to the policy (also refered as *RL algorithm*) that 
+        will be trained. It must be an instance of **rllib algorithms** (check here 
+        for more `information <https://docs.ray.io/en/latest/rllib/rllib-algorithms.html>`_)
+    :type env_config: ray.rllib.algorithms
+    :param env: The environment or **AnyLogic simulation** that the policy will use
+        to train against.
+    :type env: alpyperl.BaseAnyLogicEnv
+    :param env_config: Any option that will be consumed by the environment. Options
+        available are: *TODO:*
+    :type env_config: dict
+    :param trained_policy_loc: The location of the **rllib** trained policy. Be mindful
+        that the rllib policy creates an aditional folder when calling ``save``.
+        ``checkpoint_dir = policy.save("./resources/trained_policies/cartpole_v0")``
+    :type trained_policy_loc: str
+    :param host: The host ID to be used. Defaults to ``localhost`` or ``0.0.0.0``
+    :type host: str
+    :param port: The port the service will connect to. Defaults to ``3000``
+    :type port: int
     """
 
     # Set server flag on to avoid loading the AnyLogic model

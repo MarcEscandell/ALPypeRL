@@ -1,3 +1,4 @@
+import logging
 import numpy as np
 from py4j.clientserver import ClientServer, JavaParameters, PythonParameters
 from threading import Event, Thread
@@ -58,6 +59,7 @@ class AnyLogicModelConnector:
         exported_model_loc,
         show_terminals
     ):
+        self.logger = logging.getLogger(__name__)
         # Initialise model launcher
         self.al_model_launcher = None
         # Create an instance of the python implementation to be accessed by the
@@ -92,6 +94,10 @@ class AnyLogicModelConnector:
         python_port = (
             self.gateway.get_callback_server().get_listening_port()
         )
+        self.logger.debug(
+            "ALPypeRL connection will take place on ports "
+            f"(Java: {java_port} / Python: {python_port})"
+        )
         # Execute AnyLogic anylogic_model and tell to which ports it needs to
         # connect. All of this will be handled by the 'ALModelLauncher'
         def execute_model():
@@ -112,7 +118,7 @@ class AnyLogicModelConnector:
         # In case the user wants to run the model from AnyLogic directly (not 
         # using the exported version) the script will notify him/her that the
         # python script is waiting and ready for the AnyLogic model to be launched
-            print(
+            self.logger.info(
                 "You can now launch your AnyLogic model! "
                 "'ALPypeRLConnector' will handle the connection for you."
             )
@@ -121,6 +127,10 @@ class AnyLogicModelConnector:
         # python interface
         thread_handler = Event()
         self.anylogic_model_callback.thread_handler = thread_handler
+        self.logger.debug(
+            "Python AnyLogic connection handler is waiting AnyLogic model side "
+            "to launch and connect"
+        )
         thread_handler.wait()
 
     def close_connection(self):

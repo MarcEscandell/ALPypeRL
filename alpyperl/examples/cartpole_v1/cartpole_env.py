@@ -1,10 +1,10 @@
 import math
 from gymnasium import spaces
 import numpy as np
-from alpyperl import AnyLogicEnv
+from alpyperl import BaseAnyLogicEnv
 
 
-class CartPoleEnv(AnyLogicEnv):
+class CartPoleEnv(BaseAnyLogicEnv):
 
     def __init__(self, env_config=None, disable_env_checking=True):
 

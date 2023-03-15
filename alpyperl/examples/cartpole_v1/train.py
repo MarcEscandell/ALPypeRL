@@ -1,4 +1,4 @@
-from alpyperl.examples.cartpole_v1.cartpole_env import CartPoleEnv
+from alpyperl.examples.cartpole_v1 import CartPoleEnv
 from ray.rllib.algorithms.ppo import PPOConfig
 
 

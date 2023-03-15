@@ -1,29 +1,112 @@
+import logging
 import gymnasium as gym
 from gymnasium import spaces
 from alpyperl.anylogic.model.connector import AnyLogicModelConnector
 import numpy as np
 
+def create_custom_env(action_space, observation_space, env_config: dict=None):
+    """ Create a custom environment by passing an `action` and `observation`
 
-class AnyLogicEnv(gym.Env):
-    """The python class that contains the AnyLogic model conection and is in 
-    charge of retrieving the information required to be returned by OpenAI 
-    Gymnasium functions such as `step` and `reset`.
+    :param action_space: A valid action space: integer, double or an array of doubles
+    :type action_space: gymnasium.spaces
+    :param observation_space: A valid observation space as an array of doubles
+    :type observation_space: gymnasium.spaces.Box
+    :param env_config: Environment configuration which includes:
+
+        * ``'run_exported_model'``: In case you want to run an exported version
+        of the model. Otherwise it will wait for the AnyLogic model to connect.
+
+        * ``'exported_model_loc'``: The location of the exported model folder.
+
+        * ``'show_terminals'``: This only applies if running an exported model
+        and the user wants a terminal to be launched for every model instance 
+        (could be useful for debugging purposes).
+
+        * ``'server_mode_on'``: This is for internal use only. It is used to 
+        flag the AnyLogic model to not be launched when serving a trained policy.
+        
+        * ``'verbose'``: To be activated in case DEBUG logger wants to be 
+        activated.
+
+    :type env_config: dict
+
+    :return: Returns a class definition of your custom environment with the 
+        specified action and observation spaces
+    :rtype: CustomEnv
+    """
+    class CustomEnv(BaseAnyLogicEnv):
+
+        def __init__(self, env_config=None):
+            # Action/observation spaces
+            self.action_space = action_space
+            self.observation_space = observation_space
+            # Initialise AnyLogic environment experiment
+            super(CustomEnv, self).__init__(env_config)
+
+    return CustomEnv
+
+
+class BaseAnyLogicEnv(gym.Env):
+    """
+    The python class that contains the AnyLogic model connection and is in 
+    charge of retrieving the information required to be returned by `OpenAI 
+    Gymnasium` functions such as `step` and `reset`.
     """
 
     metadata = {'render.modes': ['human']}
 
     def __init__(
         self,
-        env_config={
+        env_config: dict = {
             'run_exported_model': True,
             'exported_model_loc': './exported_model',
             'show_terminals': False,
-            'server_mode_on': False
+            'server_mode_on': False,
+            'verbose': False
         },
-        disable_env_checking=True
+        disable_env_checking: bool = True
     ):
+        """
+        Internal AnyLogic environment wrapper constructor
+
+        :param env_config: Environment configuration which includes:
+
+            * ``'run_exported_model'``: In case you want to run an exported version
+            of the model. Otherwise it will wait for the AnyLogic model to connect.
+
+            * ``'exported_model_loc'``: The location of the exported model folder.
+
+            * ``'show_terminals'``: This only applies if running an exported model
+            and the user wants a terminal to be launched for every model instance 
+            (could be useful for debugging purposes).
+
+            * ``'server_mode_on'``: This is for internal use only. It is used to 
+            flag the AnyLogic model to not be launched when serving a trained policy.
+            
+            * ``'verbose'``: To be activated in case DEBUG logger wants to be 
+            activated.
+
+        :type env_config: dict
+        """
         # Initialise `env_config` to avoid problems when handling `None`
         self.env_config = env_config if env_config is not None else []
+
+        # Initialise logger
+        verbose = (
+            'verbose' in self.env_config
+            and self.env_config['verbose']
+        )
+        # Only log message from `alpyperl`
+        ch = logging.StreamHandler()
+        ch.addFilter(logging.Filter('alpyperl'))
+        # Create logger configuration
+        logging.basicConfig(
+            level=logging.DEBUG if verbose else logging.INFO,
+            format=f"%(asctime)s [%(name)s][%(levelname)8s] %(message)s",
+            handlers=[ch],
+        )
+        self.logger = logging.getLogger(__name__)
+
         # Check if server mode is on.
         # When loading a trained policy, there's no need to launch the model
         # as it causes an overhead.
@@ -50,16 +133,18 @@ class AnyLogicEnv(gym.Env):
                     self.env_config['show_terminals'] 
                     if 'show_terminals' in self.env_config 
                     else False
-                ),
+                )
             )
             # The gateway is the direct interface to the AnyLogic model.
             self.anylogic_model = self.anylogic_connector.gateway
 
             # Initialise and prepare the model by calling `reset` method.
             self.anylogic_model.reset()
+            
+            self.logger.info("AnyLogic model has been initialized correctly!")
 
     def step(self, action):
-        """Basic function for performing 'steps' in order for the simulation to
+        """`[INTERNAL]` Basic function for performing 'steps' in order for the simulation to
         move on. It requires an `action` as an input. This action can be of
         different types (including an array of values).
         """
@@ -105,7 +190,7 @@ class AnyLogicEnv(gym.Env):
 
 
     def reset(self, *, seed=None, options=None):
-        """Reset function will restart the AnyLogic model to its initial status
+        """`[INTERNAL]` Reset function will restart the AnyLogic model to its initial status
         and return the new initial state"""
         # Reset simulation to restart from initial conditions
         new_state = (
@@ -118,12 +203,12 @@ class AnyLogicEnv(gym.Env):
 
 
     def render(self):
-        """Whether any visualisation will be displayed or not, depends on the
+        """`[INTERNAL]` Whether any visualisation will be displayed or not, depends on the
         user when decides to export an experiment with visualisation or not"""
         pass
 
     def close(self):
-        """Close executables if any was created"""
+        """`[INTERNAL]` Close executables if any was created"""
         self.anylogic_connector.close_connection()
 
     def __parse_action(self, action):

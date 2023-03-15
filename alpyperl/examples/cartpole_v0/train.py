@@ -1,4 +1,4 @@
-from alpyperl.examples.cartpole_v0.cartpole_env import CartPoleEnv
+from alpyperl.examples.cartpole_v0 import CartPoleEnv
 from ray.rllib.algorithms.ppo import PPOConfig
 
 
@@ -16,7 +16,8 @@ policy = (
         env_config={
             'run_exported_model': True,
             'exported_model_loc': './resources/exported_models/cartpole_v0',
-            'show_terminals': False
+            'show_terminals': False,
+            'verbose': False
         }
     )
     .build()

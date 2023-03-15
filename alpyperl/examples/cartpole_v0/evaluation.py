@@ -1,5 +1,5 @@
-from alpyperl.serve.rllib.binder import launch_policy_server
-from alpyperl.examples.cartpole_v0.cartpole_env import CartPoleEnv
+from alpyperl.serve.rllib import launch_policy_server
+from alpyperl.examples.cartpole_v0 import CartPoleEnv
 from ray.rllib.algorithms.ppo import PPOConfig
 
 
