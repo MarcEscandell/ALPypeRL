@@ -79,7 +79,7 @@ Here there's an overall diagram to how *ALPypeRL* connection is built:
 Reinforcement learning basics
 ******************************
 
-If you are new to Reinforcement Learning, the best recommendation is to visit the `OpenAI Spinning Up <https://spinningup.openai.com/en/latest/>`_. It's probably the best **free educational** resource at the moment to learn in detail how RL works.
+If you're new to the field of Reinforcement Learning, a highly recommended resource to learn in-depth about its workings is `OpenAI Spinning Up <https://spinningup.openai.com/en/latest/>`_. It is considered one of the best **free educational** resources currently available for *Reinforcement Learning*.
 
 As explained in `wikipedia <https://en.wikipedia.org/wiki/Reinforcement_learning>`_:
 
@@ -97,7 +97,8 @@ As explained in `wikipedia <https://en.wikipedia.org/wiki/Reinforcement_learning
 If you want to relate what has been explained to *ALPypeRL* we can say that:
 
 * The **intelligent agents that take decisions** are the *policies* trained (e.g. using ``rllib``). You will need the python package ``alpyperl`` for dealing with agents. Agent/Policy learning happens in *ALPypeRL* on the *python* side.
-* The **environment** that is used as the *playground* for the policy to learn from via **observation** collection happens on the *AnyLogic* side. This is all connected thanks to the ``ALPypeRLConnector`` and the implementation of the required ``ALPypeRLClientController`` functions. A **reward** will be generated after taking an action. Then, the agent will try to maximize its cumulative value.
+
+* The **environment** that is used as the *playground* for the policy to learn from via **observation** collection happens on the *AnyLogic* side. This is all connected thanks to the ``ALPypeRLConnector`` and the implementation of the required ``ALPypeRLClientController`` functions. After taking an **action**, a **reward** is generated, and the *agent* works towards maximizing its *cumulative* value.
 
 Other references:
 

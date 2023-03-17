@@ -2,7 +2,7 @@
 Most common issues and how to troubleshoot them
 ################################################
 
-These are some of the most common issues captured by users when seting up or running ALPypeRL:
+These are some of the most common issues captured by users when seting up or running *ALPypeRL*:
 
 * Your AnyLogic model never stops or reaches the end and gets stuck.
 * You missed implementing ``ALPypeRLClientController`` required methods.
@@ -18,7 +18,7 @@ Your AnyLogic model never stops or reaches the end and gets stuck
 
 If your model never stops or it reaches the end of the simulation and nothing happens, it could be due to 2 potetial reasons:
 
-* Your agent (that is being controlled by an RL policy) is not requesting for new actions. That might happen if you have forgotten to call the ``ALPypeRLConnector.requestAction()``. You might want to review how to add and use the ``ALPypeRLConnector`` and pay special attention to `step 4 <The AnyLogic Connector>`.
+* Your agent (that is being controlled by an RL policy) is not requesting for new actions. That might happen if you have forgotten to call the ``ALPypeRLConnector.requestAction()``. You might want to review how to add and use the ``ALPypeRLConnector`` and pay special attention to :ref:`step 4 <The AnyLogic Connector>`.
 * Another reason could be that your function ``hasFinished()`` does not return ``true`` when the simulation reaches the end. If that is the case, you are advised to include the following check in your code:
 
 .. code-block:: java
@@ -67,7 +67,7 @@ You can fail to implement ``ALPypeRLClientController`` in two ways:
 
 Expect a similar message for ``takeAction(ActionSpace action)``, ``getObservation()`` and ``getReward()``.
 
-For both case, you might want to review how it is done `here <The AnyLogic Connector>`.
+For both case, you might want to review how it is done :ref:`here <The AnyLogic Connector>`.
 
 ***********************
 Action Space missmatch
@@ -92,7 +92,7 @@ If you receive the following error in your AnyLogic terminal:
 
 This means that there is a **missmatch** between the expected ``ActionSpace`` and the defined ``self.action_space`` in the python side when you inherited ``BaseAnyLogicEnv``. Remember that dimensions from both sides must match. If you define an action as ``self.action_space=spaces.Discrete(n)``, then you should expect to call ``action.getIntValue()`` and not ``action.getDoubleValue()``. If you fail to do so, you will receive an error.
 
-Check the `documentation<How to train your first policy. The CartPole-v0 example.>` for more details.
+Check the :ref:`documentation<How to train your first policy. The CartPole-v0 example.>` for more details.
 
 *********************************
 Evaluation server is not running
@@ -131,7 +131,7 @@ If you select the ``EVALUATE`` mode on your AnyLogic simulation model, but you d
 		at com.anylogic.engine.Engine.e(Unknown Source)
 		at com.anylogic.engine.Engine$i.run(Unknown Source)
 
-Proceed to launch your policy as indicated `here <Evaluating your trained policy>`. Remember that you must have trained your policy before you can jump to evaluating it.
+Proceed to launch your policy as indicated :ref:`here <Evaluating your trained policy>`. Remember that you must have trained your policy before you can jump to evaluating it.
 
 Another potential probelm is that you are not pointing to the right **port**. This is quite a common issue if you are running from a **docker container**. When you do so, your IDE (e.g. VSCode) will try to map the container port to the same host port. However, if the host port has the port already in use, it will look for another one that is free. You must then update your ``serverURL`` parameter on your AnyLogic model.
 

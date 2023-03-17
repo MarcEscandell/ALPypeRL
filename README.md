@@ -6,36 +6,45 @@
 
 ![ALPypeRL GIF](resources/images/alpyperl_gif.gif)
 
-With _ALPypeRL_ you will be able to:
-* Connect your AnyLogic model to a reinforcement learning framework of your choise (e.g. ray `rllib`).
-* Scale your training by launching many AnyLogic models simultaneously (requires an exported model).
-* Deploy and evaluate your trained policy from AnyLogic.
-* Debug your AnyLogic models during training (_this is unique to ALPypeRL_).
-* Leverage on the AnyLogic rich visualization while training or evaluating.
+With **ALPypeRL** you will be able to:
 
-There is a more detailed [documentation](https://alpyperl.readthedocs.io/en/latest/) that includes multiple examples to understand most the basic functionalities.
+* Connect your AnyLogic model to a reinforcement learning framework of your choise (e.g. ray ``rllib``).
+* Scale your training by launching many AnyLogic models simultaneously (*requires an exported model*).
+* Deploy and evaluate your trained policy from AnyLogic.
+* Debug your AnyLogic models during training (*this is a special feature unique to ALPypeRL that improves the user experience during model debugging remarkably*).
+* Leverage on the AnyLogic rich visualization while training or evaluating (*which ties to the previous bullet point*).
+
+There is a more comprehensive [documentation](https://alpyperl.readthedocs.io/en/latest/) available that includes numerous examples to help you understand the basic functionalities in greater detail.
 
 _NOTE: ALPypeRL has been developed using **ray rllib** as the base RL framework. Ray rllib is an industry leading open source package for Reinforcement Learning. Because of that, ALPypeRL has certain dependencies to it (e.g. trained policy deployment and evaluation)._
 
 ## Environments
 
-ALPypeRL inculdes 2 environments that make the connection between AnyLogic and your python scrip possible:
+ALPypeRL includes 2 environments that make the connection between _AnyLogic_ and your _python script_ possible:
+
 * [ALPypeRLConnector](https://alpyperl.readthedocs.io/en/latest/AnyLogicConnector.html) - The AnyLogic connector ('agent') library to be dropped into your simulation model.
-* [alpyperl](https://alpyperl.readthedocs.io/en/latest/CartPoleV0.html) - This environment includes functionalities to _train_ and _evaluate_ RL policies in python. 
+* [alpyperl](https://alpyperl.readthedocs.io/en/latest/CartPoleV0.html) - The library that you will use after configuring your _policy_ in your _python script_ to connect to the _AnyLogic_ model (includes functionalities to **train** and **evaluate**). 
 
 ## Installation
 
 To install the base **ALPypeRL** library in python, use `pip install alpyperl`.
 
-To use **ALPypeRLConnector** in AnyLogic, you can add the [library](https://github.com/MarcEscandell/ALPypeRL/tree/main/bin) to your _Palette_. That will allow you to drag and drop the connector into your model. _Note that further [instructions](https://github.com/MarcEscandell/ALPypeRL/wiki/AnyLogicConnector) are required to be followed in order for the connector to work_.
+To use **ALPypeRLConnector** in _AnyLogic_, you can add the [library](https://github.com/MarcEscandell/ALPypeRL/tree/main/bin) to your _Palette_. That will allow you to drag and drop the connector into your model. _Note that further [instructions](https://github.com/MarcEscandell/ALPypeRL/wiki/AnyLogicConnector) are required to be followed in order for the connector to work_.
 
 ![ALPypeRL Library](resources/images/alpyperl_library.png)
 
 ## Requirements
 
-The **ALPypeRL** requires you to have the AnyLogic software (or a valid exported model). AnyLogic is a licensed software for building simulations that includes an ample variety of libraries for modelling many industry challenges. At the moment, AnyLogic provides a _free_ license under the name PLE (Personal Learning Edition). There are other options available. For more information, you can visit the [AnyLogic website](https://www.anylogic.com/).
+* The **ALPypeRL** requires you to have the **AnyLogic software** (or a valid exported model). AnyLogic is a licensed software for building simulations that includes an ample variety of libraries for modelling many industry challenges. At the moment, AnyLogic provides a *free* license under the name PLE (Personal Learning Edition). There are other options available. For more information, you can visit the [AnyLogic website](https://www.anylogic.com/).
 
-_Note that this is not a package that is currently backed by the AnyLogic support team_.
+_Note: This is not a package that is currently backed by the AnyLogic support team._
+
+* The python package `alpyperl` requires (among others) 4 packages that are relatively heavy (and might take longer times to install depending on the host machine specs):
+
+    * ``ray``
+    * ``ray[rllib]``
+    * ``tensorflow``
+    * ``torch``
 
 ## API basics
 
