@@ -24,6 +24,7 @@ Welcome to **ALPypeRL** documentation!
    RunFromAnyLogic
    DockerContainer
    ScaleTraining
+   CustomExperiment
    CommonIssues
    API
 

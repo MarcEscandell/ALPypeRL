@@ -2059,6 +2059,33 @@ Controller]]></Text>
 			</ModelTimeProperties>
 			<BypassInitialScreen>true</BypassInitialScreen>
 		</SimulationExperiment>	
+		<!--   =========  Custom Experiment   ========  -->
+		<CustomExperiment>
+			<Id>1686017865934</Id>
+			<Name><![CDATA[CustomExperiment]]></Name>
+			<MaximumMemory>512</MaximumMemory>
+			<CommandLineArguments><![CDATA[]]></CommandLineArguments>
+			<VmArgs><![CDATA[]]></VmArgs>
+			<Code><![CDATA[// Create Engine, initialize random number generator:
+Engine engine = createEngine();
+engine.setTimeUnit( SECOND );
+// Fixed seed (reproducible simulation runs)
+engine.getDefaultRandomGenerator().setSeed( System.currentTimeMillis() );
+engine.setStartTime( 0.0 );
+engine.setStartDate( toDate( 2023, FEBRUARY, 28, 16, 0, 0 ) );
+// Set stop time:
+engine.setStopTime( 2000.0 );
+// Create new root object:
+Main root = new Main( engine, null, null );
+// Setup parameters of root object here
+root.setParametersToDefaultValues();
+// Set RL experiment mode to training
+root.rlMode = RLMode.TRAIN;
+// Notify ALPypeRLConnector is running under a custom experiment
+root.alPypeRLConnector.isCustomExperiment(getCommandLineArguments());
+// Prepare Engine for simulation:
+engine.start( root );]]></Code>
+		</CustomExperiment>
 	</Experiments>
 	<ModelResources>
 		<Resource>
