@@ -4,6 +4,7 @@ from fastapi import FastAPI, status
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
+import numpy as np
 
 
 def launch_policy_server(
@@ -58,6 +59,30 @@ def launch_policy_server(
     # Initialise FastAPI application server
     app = FastAPI()
 
+    def convert_tuple(action):
+        """`[INTERNAL]` if action space is a tuple, convert it to the correct format for the connector to process
+        """
+        converted = list()
+        #for each action in the space
+        for obj in action:
+            #convert box space to a float list and append
+            if isinstance(obj, np.ndarray):
+                converted.append(obj.astype(float).tolist())
+            #convert discrete space to integer and append
+            else:
+                converted.append(int(obj))
+        return converted
+       
+    def convert_observation(observation):
+        """`[INTERNAL]`first value of observation should be the observation space we need to pass to the trained policy and the second value is a bool of whether the space is discrete
+        if observation's second value is true then we know it is a discrete observation space and we need to provide the trained policy with the value and not the array containing the value
+        Second parameter necassary as it would be impossible to tell if the observation is of a discrete space or an int box space of shape (1,)
+        Box spaces are computed by the policy as an array of values (even if the shape is (1,0))
+        """
+        if(observation[1] == True):
+            return observation[0][0]
+        return observation[0]
+
     @app.get("/")
     async def greetings():
         html_content = """
@@ -72,13 +97,28 @@ def launch_policy_server(
         return HTMLResponse(content=html_content, status_code=200)
 
     @app.post("/predict")
-    async def predict_next_action(observation: List[float]):
+    async def predict_next_action(observation: List[object]):
         # Check documentation at https://docs.ray.io/en/latest/serve/tutorials/rllib.html
-        action = policy.compute_single_action(observation)
+
+        action = policy.compute_single_action(convert_observation(observation))
+
+        is_tuple = False
+
+        #if action space is tuple we need to convert to correct format and also flag that it is a tuple so the anylogic environment knows and can process it correctly
+        if isinstance(action, tuple):
+            action = convert_tuple(action)
+            is_tuple = True;
+        #if action space is not a tuple then just convert to list
+        else:
+            action = action.tolist()
+
+        print(action)
+
         # Format response
         response = {
             "observation": observation,
-            "action": action.tolist()
+            "action": action,
+            "is_tuple": is_tuple
         }
 
         return JSONResponse(content=jsonable_encoder(response), status_code=200)
