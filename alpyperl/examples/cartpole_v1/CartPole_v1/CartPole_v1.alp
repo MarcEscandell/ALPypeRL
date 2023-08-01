@@ -1610,13 +1610,14 @@ totReward += reward;]]></Body>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
+					<PresentationId>1690882668108</PresentationId>
 					<ActiveObjectClass>
-						<PackageName><![CDATA[com.alpyperl]]></PackageName>
+						<PackageName><![CDATA[com.alpype]]></PackageName>
 						<ClassName><![CDATA[ALPypeRLConnector]]></ClassName>
 					</ActiveObjectClass>
 					<GenericParameterSubstitute>
 						<GenericParameterSubstituteReference>
-							<PackageName><![CDATA[com.alpyperl]]></PackageName>
+							<PackageName><![CDATA[com.alpype]]></PackageName>
 							<ClassName><![CDATA[ALPypeRLConnector]]></ClassName>
 							<ItemName><![CDATA[1676990619206]]></ItemName>
 						</GenericParameterSubstituteReference>
@@ -1920,6 +1921,25 @@ Controller]]></Text>
 					<Latitude>0.0</Latitude>
 					<Longitude>0.0</Longitude>
 				</EmbeddedObjectPresentation>
+				<EmbeddedObjectPresentation>
+					<Id>1690882668108</Id>
+					<Name><![CDATA[alPypeRLConnector_presentation]]></Name>
+					<X>0</X><Y>0</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>true</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>false</ShowLabel>
+					<DrawMode>SHAPE_DRAW_2D3D</DrawMode>
+					<EmbeddedIcon>false</EmbeddedIcon>
+					<Z>0</Z>
+					<Rotation>0.0</Rotation>
+					<DrawingMode>AGENT_CURRENT_POSITION</DrawingMode>
+					<ScaleType>AUTOMATICALLY_CALCULATED</ScaleType>
+					<GISScaleForRealEmbeddedObjectPresentationSize>1000</GISScaleForRealEmbeddedObjectPresentationSize>
+					<GISScaleForFixedEmbeddedObjectPresentationSize>1000000000</GISScaleForFixedEmbeddedObjectPresentationSize>
+					<Latitude>0.0</Latitude>
+					<Longitude>0.0</Longitude>
+				</EmbeddedObjectPresentation>
 			</Presentation>
 
 				</Level>
@@ -2122,10 +2142,10 @@ Controller]]></Text>
 		<VersionBuild>0</VersionBuild>
     </RequiredLibraryReference>
     <RequiredLibraryReference>
-		<LibraryName><![CDATA[com.alpyperl]]></LibraryName>
+		<LibraryName><![CDATA[com.alpype]]></LibraryName>
 		<VersionMajor>0</VersionMajor>
 		<VersionMinor>0</VersionMinor>
-		<VersionBuild>0</VersionBuild>
+		<VersionBuild>1</VersionBuild>
     </RequiredLibraryReference>
 	<ClassPathEntry>
 		<ResourceReference>
