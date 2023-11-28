@@ -74,7 +74,7 @@ def launch_policy_server(
     @app.post("/predict")
     async def predict_next_action(observation: List[float]):
         # Check documentation at https://docs.ray.io/en/latest/serve/tutorials/rllib.html
-        action = policy.compute_single_action(observation)
+        action = policy.compute_single_action(observation, explore=False)
         # Format response
         response = {
             "observation": observation,

@@ -143,6 +143,13 @@ class BaseAnyLogicEnv(gym.Env):
         different types (including an array of values).
         """
 
+        # Get observation state or sample if in server mode.
+        state = (
+            np.asarray(list(self.anylogic_model.getState()))
+            if not self.server_mode_on
+            else self.observation_space.sample()
+        )
+
         # Run fast simulation until next action is required (which will be
         # controlled and requested from the AnyLogic model)
         if not self.server_mode_on:
@@ -151,16 +158,9 @@ class BaseAnyLogicEnv(gym.Env):
             # Create a java object that can handle multiple java types
             # `ActionSpace` is a class that has been defined in AnyLogic from
             # the ALPypeRLConnector.
-            action_space = self.anylogic_model.jvm.com.alpyperl.ActionSpace(action_parsed)
+            action_space = self.anylogic_model.jvm.com.alpype.ActionSpace(action_parsed)
             # Pass action to AnyLogic model.
             self.anylogic_model.step(action_space)
-
-        # Get observation state or sample if in server mode.
-        state = (
-            np.asarray(list(self.anylogic_model.getState()))
-            if not self.server_mode_on
-            else self.observation_space.sample()
-        )
 
         # Get 'current' reward (not cumulated) or dummy 0 if in server mode
         # It is assumed that reward will always be an scalar.

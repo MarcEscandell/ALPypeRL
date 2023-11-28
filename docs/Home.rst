@@ -32,7 +32,7 @@ Environments
 Installation
 ************
 
-* You must add ``ALPypeRLConnector`` in your **AnyLogic Palette**. Download the **jar** file :download:`here<../bin/ALPypeRLLibrary.jar>` and follow the :ref:`instructions<The AnyLogic Connector>`.
+* You must add ``ALPypeRLConnector`` in your **AnyLogic Palette**. Download the **jar** file :download:`here<../bin/anylogic-8.8/ALPypeLibrary.jar>` and follow the :ref:`instructions<The AnyLogic Connector>`.
 
     .. image:: images/alpyperl_library.png
         :alt: ALPypeRL Library

@@ -9,6 +9,7 @@ These are some of the most common issues captured by users when seting up or run
 * Action space missmatch.
 * Evaluation server is not running.
 * You didn't randomize your AnyLogic simulation model.
+* You get a `ClassCastException` when running the example models.
 
 If you face an issue that doesn't appear in this list and are unable to solve it, feel free to raise it `here <https://github.com/users/MarcEscandell/projects/1/views/2>`_ as others might benefit from it. 
 
@@ -145,3 +146,18 @@ To fix this problem, head to your ``Simulation`` experiment and, in the *Propert
 
 .. image:: images/random_seed.png
 	:alt: Random seed
+
+.. _classcast-exception-in-example-models:
+
+*******************************************************************
+You get a `ClassCastException` when running the **example models**
+*******************************************************************
+
+Some people has reported a `CastClassExeption` error when running the example models without any modification made on their side. This is due to a dependency on the AnyLogic version that exported the ``ALPypeLibrary`` and the uploader. To avoid this problem, ``ALPypeLibrary`` has been exported for different AnyLogic versions. Please ensure to use the right one. 
+
+In case you continue facing an exception of this sort, do not hesitate to reach out to `marcescandellmari@gmail.com <mailto:marcescandellmari@gmail.com>`_ to seek for help.
+
+Here's a screenshot of the error:
+
+.. image:: images/cast_exception.png
+	:alt: AnyLogic Cast Exception error

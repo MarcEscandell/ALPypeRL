@@ -6,7 +6,7 @@ this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
 setup(name='alpyperl',
-      version='0.0.17',
+      version='0.0.18',
       license='Apache License, Version 2.0',
       author='Marc Escandell Mari',
       author_email='marcescandellmari@gmail.com',
@@ -20,11 +20,16 @@ setup(name='alpyperl',
       install_requires=[
             'gymnasium',
             'py4j',
-            'ray',
+            'ray>=2.8',
             'ray[rllib]>=2.3.0',
             'tensorflow',
             'torch',
             'uvicorn',
             'fastapi'
-      ]
+      ],
+      extras_require={
+            'docs': [
+                'sphinx_rtd_theme'
+            ]
+        }
 )

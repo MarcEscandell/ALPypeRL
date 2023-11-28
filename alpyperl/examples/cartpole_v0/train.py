@@ -6,8 +6,9 @@ policy = (
     PPOConfig()
     .rollouts(
         num_rollout_workers=2,
-        num_envs_per_worker=2,
-        ignore_worker_failures=True,
+        num_envs_per_worker=2
+    )
+    .fault_tolerance(
         recreate_failed_workers=True,
         num_consecutive_worker_failures_tolerance=3
     )
@@ -23,10 +24,13 @@ policy = (
     .build()
 )
 
+# Perform training
 for _ in range(10):
     result = policy.train()
 
-checkpoint_dir = policy.save("./resources/trained_policies/cartpole_v0")
+# Save checkpoint
+checkpoint_dir = "./resources/trained_policies/cartpole_v0/checkpoint_000010"
+policy.save(checkpoint_dir)
 print(f"Checkpoint saved in directory '{checkpoint_dir}'")
 
 # Close all enviornments

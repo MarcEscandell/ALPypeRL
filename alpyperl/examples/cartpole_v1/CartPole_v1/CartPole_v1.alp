@@ -1610,7 +1610,7 @@ totReward += reward;]]></Body>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<PresentationId>1690882668108</PresentationId>
+					<PresentationId>1701094227079</PresentationId>
 					<ActiveObjectClass>
 						<PackageName><![CDATA[com.alpype]]></PackageName>
 						<ClassName><![CDATA[ALPypeRLConnector]]></ClassName>
@@ -1631,6 +1631,9 @@ totReward += reward;]]></Body>
 						</Parameter>
 						<Parameter>
 							<Name><![CDATA[serverUrl]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[connect]]></Name>
 						</Parameter>
 					</Parameters>
 					<ReplicationFlag>false</ReplicationFlag>
@@ -1922,7 +1925,7 @@ Controller]]></Text>
 					<Longitude>0.0</Longitude>
 				</EmbeddedObjectPresentation>
 				<EmbeddedObjectPresentation>
-					<Id>1690882668108</Id>
+					<Id>1701094227079</Id>
 					<Name><![CDATA[alPypeRLConnector_presentation]]></Name>
 					<X>0</X><Y>0</Y>
 					<Label><X>10</X><Y>0</Y></Label>
