@@ -7,6 +7,8 @@ import subprocess
 from subprocess import Popen
 from pathlib import Path
 import logging
+import signal
+import shlex
 
 
 class ALModelLauncher():
@@ -36,7 +38,7 @@ class ALModelLauncher():
         self.show_terminals = show_terminals
         self.java_exec_end_pattern = '%' if self.os_name == 'Windows' else '$'
         # Initialise executable file location and process
-        self.exec_loc = None
+        self.executable_location = None
         self.al_process = None
     
         # Create command-line arguments that refer to the Java and Python ports
@@ -46,49 +48,53 @@ class ALModelLauncher():
         self.project_name = self.__get_project_name(folder_location=folder_location)
 
     def compile_and_run(self):
-        """Compile the script and execute it considering the operating system
-        it is running on"""
+        """Compile the script and execute it considering the operating system."""
+        # Generate executable file
+        self.executable_location = str(self.__create_exec_file(f'{self.os_name.lower()}.sh'))
+        # Enclose in quotes to handle spaces
+        #quoted_executable = f"'{self.executable_location}'"
+        quoted_executable = shlex.quote(self.executable_location)
 
-        # Execute exported version of the model depending on OS
-        if self.os_name == 'Linux':
-            # Generate executable file
-            self.exec_loc = f"./{self.__create_exec_file('linux.sh')}"
-            # Execute model
-            self.al_process = (
-                Popen(['gnome-terminal', '--', self.exec_loc]) 
+        # Define command based on OS
+        command = {
+            'Linux': (
+                ['bash', '-c', quoted_executable] 
+                if not self.show_terminals 
+                else ['gnome-terminal', '--', self.executable_location]
+            ),
+            'Windows': [quoted_executable],
+            'Darwin': (
+                ['open', quoted_executable] 
                 if self.show_terminals 
-                else Popen(['bash', '-c', self.exec_loc])
+                else [quoted_executable, 'preexec_fn=os.setsid']
             )
+        }.get(self.os_name)
 
-        elif self.os_name == 'Windows':
-            # Generate executable file
-            self.exec_loc = self.__create_exec_file('windows.bat')
-            # Execute model
-            self.al_process = (
-                Popen(['start', 'cmd.exe', '/c', self.exec_loc], shell=True)
-                if self.show_terminals 
-                else Popen([self.exec_loc])
-            )
-
-        elif self.os_name == 'Darwin':
-            # Generate executable file
-            self.exec_loc = self.__create_exec_file('mac')
-            # Execute model
-            self.al_process = (
-                Popen(['open', self.exec_loc])
-                if self.show_terminals 
-                else Popen([f'./{self.exec_loc}'])
-            )
-        self.logger.debug(
-            f"AnyLogic model '{self.project_name}' has been succesfully "
-            "compiled and launched"
+        # Execute model
+        self.al_process = Popen(
+            command,
+            shell=(self.os_name == 'Windows'),
+            start_new_session=True
         )
+        self.logger.debug(f"AnyLogic model '{self.project_name}' has been successfully compiled and launched.")
+
 
     def close_model(self):
         """ Delete model executable file and close process"""
-        os.remove(self.exec_loc)
-        self.al_process.terminate()
-        self.logger.debug("AnyLogic models have been terminated")
+        try:
+            # Delete executable file traces
+            os.remove(self.executable_location)
+            # TODO: For now terminals must be closed manually since PID process is
+            # unkown. This is because the process is launched in a new terminal
+            # and tracking is lost
+            if self.show_terminals:
+                self.al_process.terminate()
+            else:
+                os.killpg(os.getpgid(self.al_process.pid), signal.SIGTERM)
+            self.logger.debug("AnyLogic models have been terminated")
+
+        except Exception as e:
+            self.logger.error(f"Error during model termination: {e}")
 
     def __get_project_name(self, folder_location):
         """ A function to extract the AnyLogic project name automatically based on
@@ -129,6 +135,6 @@ class ALModelLauncher():
             file.write(exec_file_str)
         # Parse text file to unix executable extension only if in Linux system
         if not self.os_name == 'Windows':
-            os.system(f'chmod +x {exec_loc}')
+            os.system(f"chmod +x '{exec_loc}'")
 
         return exec_loc

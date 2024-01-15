@@ -1,5 +1,4 @@
 import logging
-import numpy as np
 from py4j.clientserver import ClientServer, JavaParameters, PythonParameters
 from threading import Event, Thread
 import socket
@@ -136,4 +135,11 @@ class AnyLogicModelConnector:
     def close_connection(self):
         """Close model and connection"""
         if self.al_model_launcher is not None:
+            # First, close gateway
+            self.gateway.shutdown()
+            # Then, close model
             self.al_model_launcher.close_model()
+
+    def __del__(self):
+        """Destructor"""
+        self.close_connection()

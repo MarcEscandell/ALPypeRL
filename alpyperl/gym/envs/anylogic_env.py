@@ -1,8 +1,13 @@
 import logging
 import gymnasium as gym
 from gymnasium import spaces
+from gymnasium.spaces.utils import unflatten, flatten
 from alpyperl.anylogic.model.connector import AnyLogicModelConnector
 import numpy as np
+from alpyperl.gym.envs import utils
+import os
+import time
+
 
 def create_custom_env(action_space, observation_space, env_config: dict=None):
     """ Create a custom environment by passing an `action` and `observation`
@@ -21,7 +26,12 @@ def create_custom_env(action_space, observation_space, env_config: dict=None):
           (could be useful for debugging purposes).
         * ``'server_mode_on'``: This is for internal use only. It is used to 
           flag the AnyLogic model to not be launched when serving a trained policy. 
-        * ``'verbose'``: To be activated in case DEBUG logger wants to be activated. 
+        * ``'verbose'``: To be activated in case DEBUG logger wants to be activated.
+        * ``'checkpoint_dir'``: The location of the checkpoint directory to 
+          store the action and observation spaces in case they are defined
+          in the AnyLogic model. This is required mainly during policy
+          evaluation.
+
             
     :type env_config: dict
 
@@ -32,10 +42,10 @@ def create_custom_env(action_space, observation_space, env_config: dict=None):
     class CustomEnv(BaseAnyLogicEnv):
 
         def __init__(self, env_config=None):
-            # Action/observation spaces
+            # Action/observation spaces.
             self.action_space = action_space
             self.observation_space = observation_space
-            # Initialise AnyLogic environment experiment
+            # Initialise AnyLogic environment experiment.
             super(CustomEnv, self).__init__(env_config)
 
     return CustomEnv
@@ -57,7 +67,9 @@ class BaseAnyLogicEnv(gym.Env):
             'exported_model_loc': './exported_model',
             'show_terminals': False,
             'server_mode_on': False,
-            'verbose': False
+            'verbose': False,
+            'checkpoint_dir': './trained_policies',
+            'env_params': {}
         },
         disable_env_checking: bool = True
     ):
@@ -78,22 +90,28 @@ class BaseAnyLogicEnv(gym.Env):
               trained policy. 
             * ``'verbose'``: To be activated in case DEBUG logger wants to be 
               activated. 
+            * ``'checkpoint_dir'``: The location of the checkpoint directory to 
+              store the action and observation spaces in case they are defined
+              in the AnyLogic model. This is required mainly during policy
+              evaluation.
+            * ``'env_params'``: The environment custom parameter values (e.g., 
+              ``cartpole_mass``) as a dictionary
 
         :type env_config: dict
         
         """
-        # Initialise `env_config` to avoid problems when handling `None`
+        # Initialise `env_config` to avoid problems when handling `None`.
         self.env_config = env_config if env_config is not None else []
 
-        # Initialise logger
+        # Initialise logger.
         verbose = (
             'verbose' in self.env_config
             and self.env_config['verbose']
         )
-        # Only log message from `alpyperl`
+        # Only log message from `alpyperl`.
         ch = logging.StreamHandler()
         ch.addFilter(logging.Filter('alpyperl'))
-        # Create logger configuration
+        # Create logger configuration.
         logging.basicConfig(
             level=logging.DEBUG if verbose else logging.INFO,
             format=f"%(asctime)s [%(name)s][%(levelname)8s] %(message)s",
@@ -109,6 +127,24 @@ class BaseAnyLogicEnv(gym.Env):
         self.server_mode_on = (
             'server_mode_on' in self.env_config
             and self.env_config['server_mode_on']
+        )
+        # Check if 'Action' and 'Observation' spaces have been defined
+        # This value will be false if spaces have been defined in the AnyLogic.
+        self.spaces_exist = (
+            (hasattr(self, 'action_space') and self.action_space is not None)
+            or (hasattr(self, 'observation_space') and self.observation_space is not None)
+        )
+        # Initialize checkpoint dir to be used to store spaces.
+        self.checkpoint_dir = (
+            self.env_config['checkpoint_dir']
+            if 'checkpoint_dir' in self.env_config
+            else './trained_policies'
+        )
+        # Initialize custom parameter values.
+        self.env_params = (
+            self.env_config['env_params']
+            if 'env_params' in self.env_config
+            else {}
         )
         # Launch or connect to AnyLogic model using the connector and launcher.
         if not self.server_mode_on:
@@ -132,35 +168,109 @@ class BaseAnyLogicEnv(gym.Env):
             # The gateway is the direct interface to the AnyLogic model.
             self.anylogic_model = self.anylogic_connector.gateway
 
-            # Initialise and prepare the model by calling `reset` method.
-            self.anylogic_model.reset()
-            
+            # Initialise and prepare the model by calling `init()` method.
+            self.anylogic_model.init()
+
+            # Check if spaces have been defined from AnyLogic model.
+            if self.anylogic_model.hasSpacesDefined():
+
+                # Before setting the spaces, make sure that spaces have not
+                # already been defined by inheritance of 'BaseAnyLogicEnv'.
+                if self.spaces_exist:
+                    raise Exception(
+                        "Action/observation spaces have already been defined! "
+                        "Please ensure that they are only defined in one place. "
+                        "You must choose either from your AnyLogic model or "
+                        "from your custom environment in python."
+                    )
+
+                self.logger.debug("Spaces have been defined in AnyLogic model")
+                # Get action space from AnyLogic model.
+                self.anylogic_action_space = self.anylogic_model.getActionSpace()
+                # Parse action space from AnyLogic model to gym.spaces.
+                self.action_space = utils.parse_anylogic_rl_space(
+                    anylogic_model=self.anylogic_model,
+                    anylogic_rl_space=self.anylogic_action_space
+                )
+                # Get observation space from AnyLogic model.
+                self.anylogic_observation_space = self.anylogic_model.getObservationSpace()
+                # Parse observation space from AnyLogic model to gym.spaces
+                self.observation_space = utils.parse_anylogic_rl_space(
+                    anylogic_model=self.anylogic_model,
+                    anylogic_rl_space=self.anylogic_observation_space
+                )
+            elif not self.spaces_exist:
+                raise Exception(
+                    "Action/observation spaces have not been defined! "
+                    "Please ensure that they are defined either in your "
+                    "AnyLogic model or in your custom environment in python."
+                )
+
             self.logger.info("AnyLogic model has been initialized correctly!")
+
+        elif self.server_mode_on and not self.spaces_exist:
+            # When serving a trained policy, it is necessary to have the
+            # observation space defined. Otherwise, it will not be possible
+            # to unflatten the observation sample.
+            # This will be the case when the policy was trained using spaces
+            # defined in the AnyLogic model.
+            self.observation_space = utils.load_space(
+                f"{self.checkpoint_dir}/alpyperl_spaces/observation_space.pkl"
+            )
+            self.action_space = utils.load_space(
+                f"{self.checkpoint_dir}/alpyperl_spaces/action_space.pkl"
+            )
+
 
     def step(self, action):
         """`[INTERNAL]` Basic function for performing 'steps' in order for the simulation to
         move on. It requires an `action` as an input. This action can be of
         different types (including an array of values).
         """
-
+        # Check if AnyLogic 'ObservationSpace' has been parsed. This is necessary
+        # so observation can be flattened in the AnyLogic side.
+        if (
+            not self.server_mode_on 
+            and (
+                not hasattr(self, 'anylogic_observation_space') 
+                or self.anylogic_observation_space is None
+            )
+        ):
+            self.anylogic_observation_space = utils.parse_gym_to_anylogic_rl_space(
+                anylogic_model=self.anylogic_model,
+                observation_space=self.observation_space
+            )
         # Get observation state or sample if in server mode.
         state = (
-            np.asarray(list(self.anylogic_model.getState()))
+            unflatten(
+                self.observation_space,
+                np.asanyarray(self.anylogic_model.getState(self.anylogic_observation_space))
+            )
             if not self.server_mode_on
             else self.observation_space.sample()
         )
-
         # Run fast simulation until next action is required (which will be
-        # controlled and requested from the AnyLogic model)
+        # controlled and requested from the AnyLogic model).
         if not self.server_mode_on:
-            # Parse action to a type that can be consumed by AnyLogic model.
-            action_parsed = self.__parse_action(action)
-            # Create a java object that can handle multiple java types
-            # `ActionSpace` is a class that has been defined in AnyLogic from
-            # the ALPypeRLConnector.
-            action_space = self.anylogic_model.jvm.com.alpype.ActionSpace(action_parsed)
+            # Flatten action
+            action_parsed = flatten(self.action_space, action)
+            # Check if AnyLogic 'ActionSpace' has been parsed. This is necessary
+            # so action can be unflattened in the AnyLogic side.
+            if not hasattr(self, 'anylogic_action_space') or self.anylogic_action_space is None:
+                self.anylogic_action_space = utils.parse_gym_to_anylogic_rl_space(
+                    anylogic_model=self.anylogic_model,
+                    action_space=self.action_space
+                )
+            # Convert flatten action to AnyLogic 'RLAction' together with 
+            # AnyLogic 'ActionSpace' so unfaltten operation can be performed.
+            action_space = utils.get_anylogic_rl_action(
+                anylogic_model=self.anylogic_model,
+                flattened_action=action_parsed,
+                anylogic_action_space=self.anylogic_action_space
+            )
             # Pass action to AnyLogic model.
             self.anylogic_model.step(action_space)
+            
 
         # Get 'current' reward (not cumulated) or dummy 0 if in server mode
         # It is assumed that reward will always be an scalar.
@@ -169,7 +279,6 @@ class BaseAnyLogicEnv(gym.Env):
             if not self.server_mode_on
             else 0
         )
-
         # Check if simulation has finished.
         # Simulation length can be fixed or subject to other
         # conditions (e.g. system fails earlier and continuation is non-sense)
@@ -178,7 +287,6 @@ class BaseAnyLogicEnv(gym.Env):
             if not self.server_mode_on
             else True
         )
-
         # Return tuple: STATE, REWARD, DONE, INFO
         return state, reward, done, False, {}
 
@@ -186,13 +294,40 @@ class BaseAnyLogicEnv(gym.Env):
     def reset(self, *, seed=None, options=None):
         """`[INTERNAL]` Reset function will restart the AnyLogic model to its initial status
         and return the new initial state"""
-        # Reset simulation to restart from initial conditions
+        if not self.server_mode_on:
+            # Initialize seed by retrieving it from AnyLogic model
+            if seed is None:
+                seed = self.anylogic_model.getSeed()
+            else:
+                raise Exception("Passing a custom seed is not supported!")
+            # We need the following line to seed self.np_random
+            super().reset(seed=seed)
+        # Check if AnyLogic 'ObservationSpace' has been parsed. This is necessary
+        # so observation can be flattened in the AnyLogic side.
+        if (
+            not self.server_mode_on 
+            and (
+                not hasattr(self, 'anylogic_observation_space') 
+                or self.anylogic_observation_space is None
+            )
+        ):
+            self.anylogic_observation_space = utils.parse_gym_to_anylogic_rl_space(
+                anylogic_model=self.anylogic_model,
+                observation_space=self.observation_space
+            )
+        # Reset simulation to restart from initial conditions.
         new_state = (
-            np.asarray(list(self.anylogic_model.reset()))
+            unflatten(
+                self.observation_space,
+                np.asanyarray(self.anylogic_model.reset(
+                    self.anylogic_observation_space,
+                    utils.get_java_map(self.anylogic_model, self.env_params)
+                ))
+            )
             if not self.server_mode_on
             else self.observation_space.sample()
         )
-        # Return tuble: STATE, INFO
+        # Return tuble: STATE, INFO.
         return new_state, {}
 
 
@@ -203,23 +338,20 @@ class BaseAnyLogicEnv(gym.Env):
 
     def close(self):
         """`[INTERNAL]` Close executables if any was created"""
+        # Before closing, save observation and action space if it has been defined in the
+        # AnyLogic model.
+        # NOTE: Since there could be multiple AnyLogic models running at the
+        # same time, it is necessary to create a folder first so the other instances
+        # do not overwrite the file.
+        if not self.server_mode_on:
+            utils.save_space(self.observation_space, f"{self.checkpoint_dir}/alpyperl_spaces/observation_space.pkl")
+            utils.save_space(self.action_space, f"{self.checkpoint_dir}/alpyperl_spaces/action_space.pkl")
+            self.anylogic_model.jvm.com.alpype.RLSpace.save(
+                self.anylogic_observation_space,
+                os.path.abspath(f"{self.checkpoint_dir}/alpyperl_spaces/observation_space.ser")
+            )
+            self.anylogic_model.jvm.com.alpype.RLSpace.save(
+                self.anylogic_action_space,
+                os.path.abspath(f"{self.checkpoint_dir}/alpyperl_spaces/action_space.ser")
+            )
         self.anylogic_connector.close_connection()
-
-    def __parse_action(self, action):
-        """Parse the action from `numpy` to a primitive type that can be taken by
-        java"""
-        if isinstance(self.action_space, spaces.Discrete):
-            return int(action)
-        elif isinstance(self.action_space, spaces.Box) and action.size == 1:
-            return float(action[0])
-
-        # Assume it is an array and create a double[] type that can be consumed
-        # by java model
-        # First get double class from JVM
-        double_class = self.anylogic_model.jvm.double
-        # Create double array using 'py4j'
-        double_array = self.anylogic_model.new_array(double_class, action.size)
-        # Populate array with values from action
-        for i, v in enumerate(action):
-            double_array[i] = float(v)
-        return double_array

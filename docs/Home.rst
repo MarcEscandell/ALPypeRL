@@ -5,18 +5,19 @@ ALPypeRL
 **ALPypeRL** or *AnyLogic Python Pipe for Reinforcement Learning* is an open source library that will allow you to create and run RL experiments using simulations build in the AnyLogic software. With this package, the user can dedicate their time to what it matters: building the right playground (AnyLogic simulation) for the RL policy to learn appropriately.
 
 .. important::
-    *Reinforcement Learning* algorithms are **specialists in identifying flaws** in a system (your *AnyLogic* model). That's why *ALPypeRL* puts special emphasis on **allowing users to observe policy actions while it learns** (during training), leading to **early bug detection**. Since *RL* training can be a lengthy process, it's critical to identify issues as soon as possible. Fortunately, *AnyLogic* is a powerful tool for creating detailed visualizations, making it easier to spot bugs in the model at earlier stages.
+    *Reinforcement Learning* algorithms are **specialists in identifying flaws** in a system (your *AnyLogic* model). That's why *ALPypeRL* puts special emphasis on **allowing users to observe policy actions while it learns** (during training), leading to **early bug detection**. Since *RL* training can be a lengthy process, it's critical to identify issues as soon as possible. Fortunately, *AnyLogic* is a powerful tool for creating detailed visualizations, making it easier to spot bugs in the model at earlier stages. For more details on how to handle failed runs, check `this section <Simulation randomness and how to handle failed runs>`_.
 
 ***********
 Features
 ***********
 With **ALPypeRL** you will be able to:
 
-* Connect your AnyLogic model to a reinforcement learning framework of your choise (e.g. ray ``rllib``).
+* Connect your AnyLogic model to a reinforcement learning framework of your choice (e.g. ray ``rllib``).
 * Scale your training by launching many AnyLogic models simultaneously (*requires an exported model*).
 * Deploy and evaluate your trained policy from AnyLogic.
 * Debug your AnyLogic models during training (*this is a special feature unique to ALPypeRL that improves the user experience during model debugging remarkably*).
-* Leverage on the AnyLogic rich visualization while training or evaluating (*which ties to the previous bullet point*).
+* Identify and replicate *failed runs* by having control on the *seed* used for each run.
+* Leverage on the AnyLogic rich visualization while training or evaluating.
 
 
 ************
@@ -69,7 +70,7 @@ General architecture
 
 The ALPypeRL library consists of 2 artifacts (as mentioned earlier):
 
-* The **ALPypeRL Connector** or **ENVIRONMENT**. If you are familiar with the AnyLogic terms, this object has been basically built from a base ``Agent``. It is in charge of creating a connection from the **java** side. **AnyLogic** works as the platform to create environments to be used by the *policy*.
+* The **ALPypeRL Connector** or **ENVIRONMENT**. If you are familiar with the AnyLogic terms, this object has been basically built from a base ``Agent``. It is in charge of creating a connection from the **java** side. **AnyLogic** works as the platform to create environments to be learned by the *policy*.
   
 * The python **alpyperl** package or **POLICY**. This library will create the connection from the **python** side. Also, you will find other capabilities such as policy deployment.
 
@@ -107,6 +108,8 @@ Other references:
 
 * `RLlib <https://docs.ray.io/en/master/rllib/core-concepts.html>`_
 * `AnyLogic <https://www.anylogic.com/features/artificial-intelligence/>`_
+* `Stable Baselines <https://stable-baselines.readthedocs.io/en/master/>`_
+* `OpenAI Gym <https://gym.openai.com/>`_
 
 
 

@@ -4,6 +4,8 @@ Most common issues and how to troubleshoot them
 
 These are some of the most common issues captured by users when seting up or running *ALPypeRL*:
 
+* ``Cannot flatten array`` error.
+* Missing ``alpyperl_spaces`` file during evaluation.
 * Your AnyLogic model never stops or reaches the end and gets stuck.
 * You missed implementing ``ALPypeRLClientController`` required methods.
 * Action space missmatch.
@@ -12,6 +14,73 @@ These are some of the most common issues captured by users when seting up or run
 * You get a `ClassCastException` when running the example models.
 
 If you face an issue that doesn't appear in this list and are unable to solve it, feel free to raise it `here <https://github.com/users/MarcEscandell/projects/1/views/2>`_ as others might benefit from it. 
+
+*******************************
+``Cannot flatten array`` error
+*******************************
+
+You will receive the following error when the observation space defined does not match the observation returned by ``getObservation()`` in your AnyLogic model:
+
+.. code-block:: console
+
+	Cannot flatten array because sizes don't match (space: 198, x: 197)
+	java.lang.Error: Cannot flatten array because sizes don't match (space: 198, x: 197)
+		at com.alpype.RLSpace.flatten(RLSpace.java:158)
+		at com.alpype.ALPypeRLConnector.requestAction(ALPypeRLConnector.java:597)
+		at carracing.Car.executeActionOf(Car.java:847)
+		at com.anylogic.engine.EventTimeout.execute(Unknown Source)
+		at com.anylogic.engine.Engine.b(Unknown Source)
+		at com.anylogic.engine.Engine.bm(Unknown Source)
+		at com.anylogic.engine.Engine.e(Unknown Source)
+		at com.anylogic.engine.Engine$i.run(Unknown Source)
+
+This is a very common error that can happen even when your code is in fact correct. During initialization, *ALPypeRL* calls ``reset()``, which at the same time calls ``getObservation()``, so it can get a sample of the observation space to be used to define the neural network size in the python side. During this process, some of your objects might have not yet been created (in case you are using dynamic calls), which results in a different observation space size.
+
+A way to solve such problem, is to hardcode the observation space size in your ``getObservation()`` function. Here's an example that checks for ``time() > 0``. If time is ``0``, it returns a zero array with the right size:
+
+.. code-block:: java
+
+	public Number[] getObservation() {
+		// To avoid exception at model initialization
+		if (time() > 0) {
+			List<Number> observation = new ArrayList<>();
+			observation.addAll(car.getVisionReadings());
+			observation.add(roundToDecimal(car.getLinearVelocity(), 2));
+			observation.add(car.getTrackCompletion());
+			return observation.toArray(new Number[observation.size()]);
+		}
+		// Return empty observation
+		int size = (int) Math.sqrt(numSensors);
+		Integer[] emptyObs = new Integer[size * size + 2];
+		// Initialize all elements to zero
+		for (int i = 0; i < emptyObs.length; i++) {
+			emptyObs[i] = 0;
+		}
+		return emptyObs;
+	}
+
+***************************************************
+Missing ``alpyperl_spaces`` file during evaluation
+***************************************************
+
+If when calling your ``launch_policy_server`` you get the following error, you might have not closed your policy and your environments correctly during training:
+
+.. code-block:: console
+
+	FileNotFoundError: [Errno 2] No such file or directory: './trained_policy/alpyperl_spaces/observation_space.pkl'
+
+To fix this issue, you must ensure to call ``policy.stop()`` at the end of your training script:
+
+.. code-block:: python
+	:emphasize-lines: 7
+
+	# [...]
+	# Save policy checkpoint.
+	policy.save(checkpoint_dir)
+	print(f"Checkpoint saved in directory '{checkpoint_dir}'")
+
+	# Close all enviornments.
+	policy.stop()
 
 *******************************************************************
 Your AnyLogic model never stops or reaches the end and gets stuck
@@ -146,8 +215,6 @@ To fix this problem, head to your ``Simulation`` experiment and, in the *Propert
 
 .. image:: images/random_seed.png
 	:alt: Random seed
-
-.. _classcast-exception-in-example-models:
 
 *******************************************************************
 You get a `ClassCastException` when running the **example models**

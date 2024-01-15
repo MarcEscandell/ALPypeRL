@@ -1,0 +1,35 @@
+<configuration>
+
+  <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+      <encoder>
+          <pattern>[%level] %logger{0} - %msg%n</pattern>
+      </encoder>
+  </appender>
+
+  <appender name="LOGFILE" class="ch.qos.logback.core.FileAppender">
+      <file>logs/modelLog.txt</file>
+      <append>true</append>
+      <encoder>
+          <pattern>%d{HH:mm:ss.SSS} [%level] %logger{0} - %msg%n</pattern>
+      </encoder>
+  </appender>
+
+  <!-- Enable line below for trace of Logback actions
+  <statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener" />
+  -->
+
+  <root level="WARN">
+    <appender-ref ref="LOGFILE" />
+    <appender-ref ref="CONSOLE" />
+  </root>
+
+  <logger name="com.alpype" level="TRACE" additivity="true">
+  </logger>
+
+  <!-- Use entries like this to change the level for specific classes
+  <logger name="loggingtest.Main"
+          level="DEBUG" additivity="true" />
+  -->
+
+</configuration>
+

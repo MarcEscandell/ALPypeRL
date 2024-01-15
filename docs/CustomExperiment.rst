@@ -14,7 +14,7 @@ This experiment type is commonly employed by developers to run the model without
 Here's a guide on how to proceed in case of the :ref:`CartPole-v0 example<How to train your first policy. The CartPole-v0 example.>`:
 
 .. code-block:: java
-    :emphasize-lines: 17
+    :emphasize-lines: 35
 
     // Create Engine, initialize random number generator:
     Engine engine = createEngine();
@@ -29,8 +29,26 @@ Here's a guide on how to proceed in case of the :ref:`CartPole-v0 example<How to
     Main root = new Main( engine, null, null );
     // Setup parameters of root object here
     root.setParametersToDefaultValues();
-    // Set RL experiment mode to training
-    root.rlMode = RLMode.TRAIN;
+    root.set_rlMode(RLMode.TRAIN);
+    // Set ALPypeRLConnector parameter values
+    root.alPypeRLConnector.set_connect(true);
+    // Set 'Action' and 'Observation' spaces
+    root.alPypeRLConnector.set_setSpaces(true);
+    root.alPypeRLConnector.set_observationSpace(
+        ObservationSpace.init()
+            .add(GymSpaces.box(-2 * 2.4, 2 * 2.4))
+            .add(GymSpaces.Box.unbounded())
+            .add(GymSpaces.box(-2 * 12 * 2 * PI / 360.0, 2 * 12 * 2 * PI / 360.0))
+            .add(GymSpaces.Box.unbounded())
+            .build()
+    );
+    root.alPypeRLConnector.set_actionSpace(
+        ActionSpace.init()
+        .add(GymSpaces.box(-1.0, 1.0))
+        .build()
+    );
+    // Set unique simulation runs
+    root.alPypeRLConnector.set_randomnessMode(RandomnessMode.UNIQUE_RUNS);
     // Notify ALPypeRLConnector is running under a custom experiment
     root.alPypeRLConnector.isCustomExperiment(getCommandLineArguments());
     // Prepare Engine for simulation:

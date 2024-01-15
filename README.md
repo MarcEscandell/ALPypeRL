@@ -8,13 +8,16 @@
 
 With **ALPypeRL** you will be able to:
 
-* Connect your AnyLogic model to a reinforcement learning framework of your choise (e.g. ray ``rllib``).
+* Connect your AnyLogic model to a reinforcement learning framework of your choice (e.g. ray ``rllib``).
 * Scale your training by launching many AnyLogic models simultaneously (*requires an exported model*).
 * Deploy and evaluate your trained policy from AnyLogic.
 * Debug your AnyLogic models during training (*this is a special feature unique to ALPypeRL that improves the user experience during model debugging remarkably*).
-* Leverage on the AnyLogic rich visualization while training or evaluating (*which ties to the previous bullet point*).
+* Identify and replicate *failed runs* by having control on the *seed* used for each run.
+* Leverage on the AnyLogic rich visualization while training or evaluating.
 
 There is a more comprehensive [documentation](https://alpyperl.readthedocs.io/en/latest/) available that includes numerous examples to help you understand the basic functionalities in greater detail.
+
+> **No licence** is required for single instance experiments. **AnyLogic PLE** is free!.
 
 _NOTE: ALPypeRL has been developed using **ray rllib** as the base RL framework. Ray rllib is an industry leading open source package for Reinforcement Learning. Because of that, ALPypeRL has certain dependencies to it (e.g. trained policy deployment and evaluation)._
 
@@ -59,38 +62,51 @@ To be able to train your policy, you must have the following:
 * A **python script** that contains the RL framework. Here is where the policy is going to be trained. For that, you will need to create your _custom environment_ taking into consideration what your AnyLogic model expects to return and receive. By default, you must define the _action_ and _observation_ spaces. Please visit the [CartPole-v0](https://alpyperl.readthedocs.io/en/latest/CartPoleV0.html) example for a more detailed explanation.
 
 ```python
-from alpyperl.examples.cartpole_v0 import CartPoleEnv
+from alpyperl import AnyLogicEnv
 from ray.rllib.algorithms.ppo import PPOConfig
 
+# Set checkpoint directory.
+checkpoint_dir = "./resources/trained_policies/cartpole_v0"
 
+# Initialize and configure policy using `rllib`.
 policy = (
     PPOConfig()
     .rollouts(
         num_rollout_workers=2,
-        num_envs_per_worker=2,
-        ignore_worker_failures=True,
+        num_envs_per_worker=2
+    )
+    .fault_tolerance(
         recreate_failed_workers=True,
         num_consecutive_worker_failures_tolerance=3
     )
     .environment(
-        CartPoleEnv, 
+        AnyLogicEnv, 
         env_config={
             'run_exported_model': True,
             'exported_model_loc': './resources/exported_models/cartpole_v0',
             'show_terminals': False,
-            'verbose': False
+            'verbose': False,
+            'checkpoint_dir': checkpoint_dir,
+            'env_params': {
+                'cartMass': 1.0,
+                'poleMass': 0.1,
+                'poleLength': 0.5,
+            }
         }
     )
     .build()
 )
 
+# Perform training.
 for _ in range(10):
     result = policy.train()
 
-checkpoint_dir = policy.save("./resources/trained_policies/cartpole_v0")
+# Save policy checkpoint.
+policy.save(checkpoint_dir)
 print(f"Checkpoint saved in directory '{checkpoint_dir}'")
 
-# Close all enviornments
+# Close all enviornments.
+# NOTE: This is required to be called for correct checkpoint saving by ALPypeRL.
 policy.stop()
 ```
 
@@ -100,14 +116,15 @@ The evaluation of your _trained policy_ is made simple in **alpyperl**. See the 
 
 ```python
 from alpyperl.serve.rllib import launch_policy_server
-from alpyperl.examples.cartpole_v0 import CartPoleEnv
+from alpyperl import AnyLogicEnv
 from ray.rllib.algorithms.ppo import PPOConfig
 
 
+# Load policy and launch server.
 launch_policy_server(
     policy_config=PPOConfig(),
-    env=CartPoleEnv,
-    trained_policy_loc='./resources/trained_policies/cartpole_v0/checkpoint_000010',
+    env=AnyLogicEnv,
+    trained_policy_loc='./resources/trained_policies/cartpole_v0',
     port=3000
 )
 ```

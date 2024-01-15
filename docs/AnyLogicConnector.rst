@@ -63,7 +63,7 @@ Implement ``ALPypeRLClientController``
 
 This is a very important step in order for the *ALPypeRL Connector* to understand what it needs to do when the training starts or when you are evaluating your policy.
 
-First, you must add ``ALPypeRLClientConnector`` to the list of interfaces of your **root** agent. To do this, first click on a random point in the canvas of your *root* agent (usually named as ``Main``) and then navigate to the *Properties* page. Scroll down to find the section *Advanced Java*. You should be able to see *Implements (comma-separated list of interfaces)*. Then you can add ``ALPypeRLClientController``.
+First, you must add ``ALPypeRLClientController`` to the list of interfaces of your **root** agent. To do this, first click on a random point in the canvas of your *root* agent (usually named as ``Main``) and then navigate to the *Properties* page. Scroll down to find the section *Advanced Java*. You should be able to see *Implements (comma-separated list of interfaces)*. Then you can add ``ALPypeRLClientController``.
 
 .. image:: images/root_interface.png
     :alt: Root interface
@@ -77,17 +77,20 @@ These errors indicate that, if you plan to implement the interface, you must als
 
 You can now drag and drop 4 new functions. Their arguments and return types must be as follows (otherwise the compilation error won't go away):
 
-* ``void takeAction(ActionSpace action)``: This function is called by the *RL algorithm* to provide an action to the agent in the environment. Use the ``ActionSpace`` argument to apply the action in your AnyLogic model.
+* ``void takeAction(RLAction action)``: This function is called by the *RL algorithm* to provide an action to the agent in the environment/simulation. Use the ``RLAction`` argument to apply the action in your AnyLogic model.
 
     .. note::
-        The **action type must match** what you have (or will define) in your **python script**. Refer to :ref:`Gym Action and Observation spaces <Create the *Action* and *Observation* spaces>`.
+        The **action type must match** what you have (or will define) in your **action space** which you might decide to define from **java** or through **python** if you decide to create a *CustomEnv* (optional). Refer to :ref:`Gym Action and Observation spaces <Create the *Action* and *Observation* spaces>` for more details.
 
-* ``double[] getObservation()``: This function returns the current state of the environment as a ``double[]`` array.
+* ``Number[] getObservation()``: This function returns the current state of the environment as a ``Number[]`` array. ``Number`` is a java abstract class for the types ``Integer``, ``Double``, etc. This will be specially useful if your space has a mix of discrete and continuous values.
+
+    .. note::
+        Just like before, **observation type must match** what you have (or will define) in your **observation space**. Pay special attention if you are defining your space from **python**.
 
 * ``double getReward()``: This function returns the reward obtained by the *agent* in the current step.
 
     .. warning:: 
-        Note that this should not be a cumulated value (e.g. in the *CartPole-v0* example, the cart gets a reward of ``1`` for every step that manages to keep the pole straight and within boundaries).
+        Note that this should not be a cumulated value (e.g. in the *CartPole-v0* example, the cart gets a reward of ``1`` for every step that manages to keep the pole straight and within boundaries). This *step reward* of ``1`` is what should be returned by this function.
 
 * ``boolean hasFinised()``:  This function returns ``true`` if the simulation has reached a *stop criterion*. (e.g. the pole attached to the cart has exceeded a certain non-recoverable angle or the simulation has reached the end).
 
@@ -104,6 +107,8 @@ Call ``requestAction`` when the RL agent in the simulation requires a new action
 The function is accessible from the ``alPypeRLConnector`` instance (e.g. ``alPypeRLConnector.requestAction()``).
 
 In the *CartPole-v0* example, there is a cyclic event that updates the status of the system (*horizontal positon*, *cart speed*, *pole angle* and *pole angular velocity*). At this point in the simulation, the cartpole is requesting the next action, which is either to apply a force to the right or the left.
+
+In your custom model, you will call ``requestAction()`` at the location where your agent will need to receive an action so it can proceed (*not necessarily in a cyclic event*).
 
 .. image:: images/event_request_action.png
     :alt: requestAction() function

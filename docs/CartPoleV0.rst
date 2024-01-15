@@ -10,9 +10,9 @@ In this page, you will learn how to setup the **python script** where the **RL p
 In summary, in any *RL experiment* that you build using *ALPypeRL*, you should be:
 
 * Creating an **Action and Observation space** custom to your simulation.
-* Wrapping your **simulation environment** within the **BaseAnyLogicEnv**. 
+* *[Optional]* Wrapping your **simulation environment** within the **BaseAnyLogicEnv**. *Note: This is only aplicable in case the Action and Observation spaces are defined from the python script.*
 
-    .. warning:: 
+    .. warning::
         Remember to call ``super(CartPoleEnv, self).__init__(env_config)`` at the end of your ``CustomEnv`` if you inherit ``BaseAnyLogicEnv``.
         
         On the other hand, there's a **FASTER** and **MORE SECURE** way to create a custom environment **by calling** ``create_custom_env(action_space, observation_space)``.
@@ -20,43 +20,68 @@ In summary, in any *RL experiment* that you build using *ALPypeRL*, you should b
 * Configuring your policy and starting your **trainning**.
 * Tracking your training progress.
 
-Further details on the actual AnyLogic implementation of the *CartPole-v0* can be found down below:
-
-* The **CartPole-v0 implementation** in AnyLogic.
+Further details on the actual AnyLogic implementation of the *CartPole-v0* at the end of the page.
 
 **********************************************
 Create the *Action* and *Observation* spaces
 **********************************************
 
-This step requires the most **customization** in your **Python script** since it is specific to the problem you are trying to solve. Most other steps should be applicable to any experiment.
+This step requires the most **customization**, since it is specific to the problem you are trying to solve. Most of the other steps should be applicable to any experiment.
+
+Please check `Spinning up by Open AI <https://spinningup.openai.com/en/latest/spinningup/rl_intro.html>`_ for a more detailed explanation on *action* and *observation* spaces (and in RL In general).
 
 ============
 Action space
 ============
 
-The **action space** defines the range of options available to the *RL agent* when deciding what action to take. These options are inherited from **OpenAI Gymnasium**. For more details, please refer to their `documentation <https://gymnasium.farama.org/api/spaces/>`_. At this time, *ALPypeRL* can only support the following types, which should be sufficient in most cases:
+The **action space** defines the range of options available to the *RL agent* when deciding what action to take. These options are inherited from **OpenAI Gymnasium**. For more details, please refer to their `documentation <https://gymnasium.farama.org/api/spaces/>`_.
 
-* **Discrete**. It supports a range of *discrete* or *integer* values. These values can be then translated into specific actions in the simulation model. In the *CartPole-v0* example, the model can process 2 actions under the indices of ``0`` and ``1``. ``0`` represents a single force that is being applied from *left to right* and ``1`` the opposite, from *right to left*. Both with equal intensity. In :ref:`CartPole-v1 <How to set continuous actions. The CartPole-v1 example.>` you will be able to learn how to apply a continuous force (any value within a range). For further details, visit `spaces.Discrete <https://gymnasium.farama.org/api/spaces/fundamental/#gymnasium.spaces.Discrete>`_.
+.. note::
+    *ALPypeRL* supports most of the **OpenAI Gymnasium** spaces. For more details on the spaces available, please check this `section <How to define a space>`_. Spaces can be created in two ways:
 
-* **Box**. It allows you create a range of values which can be ``1`` or ``n-dimensional``. In this case, the index of the array represent a value of a controller in the simulation. For example, in *CartPole-v1* it refers to the intensity of the force. Such force can take any value in between ``-1`` and ``1``. The sign of the value defines the direction of the force. In the :ref:`CartPole-v2 example <How to set an array of continuous actions. The CarPole-v2 example.>`, we have separated the action space into a ``2-dimension`` array where the first index of the array represents the intensity of the force applied on the left (ranging from ``-1`` to ``0``) and the second index of the array stands as the intensity of the force applied on the right (any value between ``0`` and ``1``). From a technical point of view, it is not the right approach (recommended to just use a single range). But it does prove the ALPypeRL capability. For further details, visit `spaces.Box <https://gymnasium.farama.org/api/spaces/fundamental/#gymnasium.spaces.Box>`_.
+    * Directly from the **ALPypeRLConnector** using the **java** API.
+    * From the **python script** using the **gymnasium** package.
+
+For the *CartPole-v0 example* the space has been defined as follows in the **java API** from *AnyLogic*:
+
+    .. code-block:: java
+
+        ActionSpace.init().add(GymSpaces.discrete(2)).build()
+
+.. note::
+    Remember to check the box **Create here (else define in python)** in the **ALPypeRLConnector** properties.
+
+    .. image:: images/create_spaces_anylogic.png
+        :alt: Create spaces in AnyLogic
 
 
 =================
 Observation space
 =================
 
-The **observation space** is the information that the RL policy will receive (what it can *see*) from the simulation. You could think that the more your policy can see (or the more parameters you pass), the more chances the policy has to learn. However, irrelevant observations can cause your policy to overfit. In the same way, lack of information can result in slow learning or no learning at all.
+The **observation space** is the information that the RL policy will receive (what it can *see*) from the simulation. You could think that the more your policy can see (or the more parameters you pass), the more chances the policy has to learn. However, irrelevant observations might extend your training considerably as the policy tries to remove the noise. In the same way, lack of information can result in slow learning or no learning at all.
 
 .. note:: 
-    Setting up the right *action* and *observation* spaces in order for your policy to learn as fast and as better as possible is part of the reinforcement learning challenge and it will vary depending on each problem.
+    Setting up the right *action* and *observation* spaces in order for your policy to learn as fast and as better as possible is part of the reinforcement learning challenge and it will vary depending on each problem. There is no right or wrong answer. You will need to experiment and find the right balance.
 
-.. important:: 
-    By default, **ALPypeRL** assumes that the observation space is going to be an array that can go from ``1`` to ``n-dimension`` and wrapped using the **Box** space.
+For the *CartPole-v0 example* the observation space has been defined as follows in the **java API** from *AnyLogic*:
+
+    .. code-block:: java
+
+        ObservationSpace.init()
+            .add(GymSpaces.box(-2 * 2.4, 2 * 2.4))
+            .add(GymSpaces.Box.unbounded())
+            .add(GymSpaces.box(-2 * 12 * 2 * PI / 360.0, 2 * 12 * 2 * PI / 360.0))
+            .add(GymSpaces.Box.unbounded())
+            .build()
 
 
-********************************************************
-Wrap your ``CustomEnv`` around the ``BaseAnyLogicEnv``
-********************************************************
+*******************************************************************
+*[Optional]* Wrap your ``CustomEnv`` around the ``BaseAnyLogicEnv``
+*******************************************************************
+
+.. important::
+    As mentioned earlier, this step is only required if you are defining your *action* and *observation* spaces from the python script. If you are defining them from the **ALPypeRLConnector**, you can skipt this.
 
 There are two ways to perform this step:
 
@@ -67,7 +92,7 @@ There are two ways to perform this step:
 Inherit ``BasicAnyLogicEnv``
 ============================
 
-In order for the **rllib** configuration to accept your environment, you must wrap it around the ``BaseAnyLogicEnv`` (in python terms, it requires you to **inherit** this class). This environment contains all the required functions that *rllib* is expecting. At the same time, it will handle the connections directly with your AnyLogic model.
+In order for the **rllib** configuration to accept your environment, you must wrap it around the ``BaseAnyLogicEnv`` (in object oriented terms, it requires you to **inherit** this class). This environment contains all the required functions that *rllib* is expecting. At the same time, it will handle the connections directly with your AnyLogic model.
 
 Going back to the *CartPole-v0* example, your *python script* for training shoul look like:
 
@@ -96,8 +121,8 @@ Going back to the *CartPole-v0* example, your *python script* for training shoul
                 ]
             )
             # Create Action and Observation spaces using `gymnasium.spaces`
-            action_space = spaces.Discrete(2)
-            observation_space = spaces.Box(-high, high, dtype=np.float32)
+            self.action_space = spaces.Discrete(2)
+            self.observation_space = spaces.Box(-high, high, dtype=np.float32)
             
             # IMPORTANT: Initialise AnyLogic environment experiment after
             # environment creation
@@ -105,9 +130,9 @@ Going back to the *CartPole-v0* example, your *python script* for training shoul
 
 As you can see, we have created a simple action space with 2 values as ``spaces.Discrete(2)`` which can take either ``0`` or ``1``. Later in the simulation, you will be in charge of translating these indices into specifict actions. 
 
-On the other hand, we have created an array (size 4) for the observations using the ``spaces.Box(min, max)``. The content of the array is expected to be: cartpole position, linear velocity, pole angle against vertical and angular velocity.
+On the other hand, we have created an array (size 4) for the observations using the ``spaces.Box(low, high)``. The content of the array is expected to be: *cartpole position*, *linear velocity*, *pole angle* against vertical and *angular velocity*.
 
-When creating a **Box space**, you will be asked to provide the *minimum* and *maximum* values. For this particular problem, the minimum and maximum ranges for the observation space are limited to the cartPole x position and the angle of the pole. The horizontal position represents the limits set in the AnyLogic model (if the car goes beyond the screen) and a certain angle that is considered non-recoverable.
+When creating a **Box space**, you will be asked to provide the *minimum* and *maximum* values. For this particular problem, the minimum and maximum ranges for the observation space are limited to the cartPole x position and the angle of the pole. The horizontal position represents the limits set in the AnyLogic model (if the car goes beyond the screen) or the cartpole reaches a certain angle that is considered non-recoverable. The other parameters are unbounded.
 
 .. warning::
     **Another very important step is to call** ``super(CartPoleEnv, self).__init__(env_config)`` **at the end of your configuration**. This step will execute the initialization code defined in the parent class ``BaseAnyLogicEnv``.
@@ -122,47 +147,61 @@ As mentioned earlier in the summary, there's a faster way to create a custom env
 Policy configuration and training execution
 *******************************************
 
-Once your environment has been properly wrapped around the ``BaseAnyLogicEnv`` you are good to continue setting up the policy that you decide to choose to train (e.g. ``PPO``) and start the training process.
+Once your environment has been properly defined, either directly from AnyLogic or by wrapping your *CustomEnv* around the ``BaseAnyLogicEnv`` you are good to continue setting up the policy that you choose to train (e.g. ``PPO``) and start the training process.
 
-There are plenty of `policies available <https://docs.ray.io/en/latest/rllib/rllib-algorithms.html>`_ under the **rllib** package. All of them have their own characteristics and configurable parameters which you'll learn to use. Other settings are common accross algorithms.
+There are plenty of `policies available <https://docs.ray.io/en/latest/rllib/rllib-algorithms.html>`_ under the **rllib** package. All of them have their own characteristics and configurable parameters which you'll learn to use. Some settings are common accross algorithms.
 
 In this example we will be using the **PPO** or **Proximal Policy Optimization** algorithm. You can find more details `here <https://docs.ray.io/en/latest/rllib/rllib-algorithms.html#ppo>`__.
 
-An example of training script:
+Here's an example of training script assuming that you have configured your *action* and *observation* spaces from AnyLogic. In this case, you are only required to pass **AnyLogicEnv** as the environment to the policy (and nothing more). In case you defined your *CustomEnv* in python, then you should pass it as your environment (e.g., *CartPoleEnv* which inherits *BaseAnyLogicEnv*):
 
 .. code-block:: python
 
-    from alpyperl.examples.cartpole_v0 import CartPoleEnv
+    from alpyperl import AnyLogicEnv
     from ray.rllib.algorithms.ppo import PPOConfig
 
-    # Initialise policy configuration (e.g. PPOConfig), rollouts and environment
+    # Set checkpoint directory.
+    checkpoint_dir = "./resources/trained_policies/cartpole_v0"
+
+    # Initialize and configure policy using `rllib`.
     policy = (
         PPOConfig()
         .rollouts(
-            num_rollout_workers=1,
-            num_envs_per_worker=1,
+            num_rollout_workers=2,
+            num_envs_per_worker=2
+        )
+        .fault_tolerance(
+            recreate_failed_workers=True,
+            num_consecutive_worker_failures_tolerance=3
         )
         .environment(
-            CartPoleEnv,    # Or call `create_custom_env(action_space, observation_space)`
+            AnyLogicEnv, 
             env_config={
                 'run_exported_model': True,
                 'exported_model_loc': './resources/exported_models/cartpole_v0',
                 'show_terminals': False,
-                'verbose': False
+                'verbose': False,
+                'checkpoint_dir': checkpoint_dir,
+                'env_params': {
+                    'cartMass': 1.0,
+                    'poleMass': 0.1,
+                    'poleLength': 0.5,
+                }
             }
         )
         .build()
     )
 
-    # Create training loop
+    # Perform training.
     for _ in range(10):
         result = policy.train()
 
-    # Save policy at known location
-    checkpoint_dir = policy.save("./resources/trained_policies/cartpole_v0")
+    # Save policy checkpoint.
+    policy.save(checkpoint_dir)
     print(f"Checkpoint saved in directory '{checkpoint_dir}'")
 
-    # Close all enviornments (otherwise AnyLogic model will be hanging)
+    # Close all enviornments.
+    # NOTE: This is required to be called for correct checkpoint saving by ALPypeRL.
     policy.stop()
 
 There are a few important notes to take here:
@@ -170,6 +209,10 @@ There are a few important notes to take here:
 * If you decide to **scale** your training to multiple **workers** and **environments**, you must be aware that this is only possible if you are in a possession of an AnyLogic license. That will allow you to export the model into standalone executable. Once you do so, you can proceed to increase the ``num_rollout_workers`` and ``num_envs_per_worker`` to more than 1 (check this `link <https://docs.ray.io/en/latest/rllib/core-concepts.html>`_ for further details and options). You will also need to set some environment variables via ``env_config``. The ``run_exported_model`` controls whether you want to run an exported model or directly from AnyLogic. The ``exported_model_loc`` specifies the location of the exported model folder (it will default to ``./exported_model``).
 
 * If you are unable to export your model or you are currently debugging it and running it directly from AnyLogic, you should default ``num_rollout_workers`` and ``num_envs_per_worker`` to ``1`` and set ``run_exported_model`` to ``False``. Then, when you run your train script, you should be getting a message informing you that your python script is ready and waiting for your simulation model to be launched on the AnyLogic side. If the connection is succesful, you will see your model running (as fast as possible). That indicates that the training has started. Note that you define the number of *training steps* in the *for loop* that encapsulates your ``policy.train()``.
+
+* You **must** set a ``checkpoint_dir`` in order to save your policy. This is the directory where your policy will be saved as well as some *ALPypeRL* metadata.
+
+* You can pass **custom simulation parameter** values via ``env_params``. These will be passed to your AnyLogic model when it is launched. In this example, we are passing the cart and pole masses as well as the pole length. The **keys of the dictionary must match the names of the parameters** in your AnyLogic model.
 
 .. note::
     ``'show_terminals'`` is a flag (or ``boolean``) that allows you to activate each simulation model terminal. This specially useful if you want to track individual models while training via log messages. *Remember* that this is only applicable if you are running an exported version.
@@ -206,19 +249,20 @@ Once setup properly, we can continue implementing the required functions by ``AL
 .. warning::
     **Adding and implementing** ``ALPypeRLClientController`` **is crucial** as it will be used by the ``ALPypeRLConnector`` to drive the simulation.
 
-* ``void takeAction(ActionSpace action)``. This function takes ``ALPypeRLConnector.ActionSpace`` as an argument. 
+* ``void takeAction(RLAction action)``. This function takes ``ALPypeRLConnector.RLAction`` as an argument. 
 
     .. note::
-        ``ActionSpace`` class has been build around the assumption that actions can be:
+        ``RLAction`` class has been build around the assumption that actions can be:
 
-        * A **discrete** value (or *integer*) which you can access by calling ``int getIntAction()`` as shown in the *CartPole-v0* example.
-        * A **continuous** value, accessible by calling ``double getDoubleAction()``. Check the :ref:`CartPole-v1 example <How to set continuous actions. The CartPole-v1 example.>`.
-        * An **array of doubles**. accessible by calling ``double[] getActionArray()``. Check the :ref:`CartPole-v2 example <How to set an array of continuous actions. The CarPole-v2 example.>`.
+        * A **single discrete** value (or *integer*) which you can access by calling ``int getIntAction()`` as shown in the *CartPole-v0* example.
+        * A **single continuous** value, accessible by calling ``double getDoubleAction()``. Check the :ref:`CartPole-v1 example <How to set continuous actions. The CartPole-v1 example.>`.
+        * An **array of numbers**. accessible by calling ``Number[] getActions()`` or ``Number getNumber(int index)``, ``Double getDouble(int index)`` and ``Integer getInt(int index)`` if you want to access specific values given an index. Check the :ref:`CartPole-v2 example <How to set an array of continuous actions. The CarPole-v2 example.>` and :ref:`CartPole-v3 example <How to set an array of mixed actions. The CarPole-v3 example.>`.
         
     .. warning::
-        The method that you are calling should be consistent with the **action_space** that you defined in the custom environment that inherited ``BaseAnyLogicEnv`` (in your python script).
+        The method that you are calling should be consistent with the **action_space** that you have defined. A quite common mistake is to retrieve an action by an index that does not match the space type. For example, you call ``getDoubleAction`` when you have defined a ``spaces.Discrete(n)``. In case there is a missmatch, an exception will be thrown. Another common mistake is to try to retrieve an index that is out of bounds.
         
-        For example, calling ``getIntAction`` only makes sense if you have defined a ``spaces.Discrete(n)``. In case there is a missmatch, an exception will be thrown. 
+    .. note::
+        Action space is always flattened. That means that for complex spaces, the order of the accessible indices will be the same as the order of the elements in the array.
 
   Following is the code used for *CartPole-v0* example in AnyLogic:
 
@@ -255,7 +299,7 @@ Once setup properly, we can continue implementing the required functions by ``AL
             done = true;
         }
 
-* ``double[] getObservation()``. In *CartPole-v0* example, 4 parameters will be collected and returned in array form:
+* ``Number[] getObservation()``. In *CartPole-v0* example, 4 parameters will be collected and returned in array form:
 
     * X position.
     * Linear velocity.
@@ -266,16 +310,16 @@ Once setup properly, we can continue implementing the required functions by ``AL
   
     .. code-block:: java
 
-        return new double[] {
+        return new Number[] {
             cartPole.getXPosition(),
             cartPole.getLinearVelocity(),
             cartPole.getAngle(),
             cartPole.getAngularVelocity()
         };
 
-* ``double getReward()``. As you saw in the code above, a reward of **1** is collected for every step of the simulation where the cart and the pole are within the set boundaries. That is why the reward is a local variable that is set when on ``takeAction`` function.
+* ``double getReward()``. As you saw in the code above, a reward of **1** is collected for every step of the simulation where the cart and the pole are within the boundaries set. In this example, the reward is set during the execution of ``takeAction`` function, but this may not be the case in other problems.
 
-* ``boolean hasFinished()``. Just like ``getReward``, there is a local variable ``done`` that will indicate if the model has exceeded the set boundaries or it has reach the end of the simulation clock. It is set in ``takeAction``.
+* ``boolean hasFinished()``. Just like ``getReward``, there is a local variable ``done`` that will indicate if the model has exceeded the boundaries set or it has reach the end of the simulation clock. It is also defined during ``takeAction``.
 
     .. important::
         You **must return** ``true`` **when the simulation has reached the end**. Failing to do so will result in your simulation training geting stuck as exposed :ref:`here <Your AnyLogic model never stops or reaches the end and gets stuck>`.

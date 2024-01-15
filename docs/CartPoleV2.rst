@@ -5,23 +5,33 @@ How to set an array of continuous actions. The CarPole-v2 example.
 .. note::
   You may find the source code of the *CartPole-v2* `here <https://github.com/MarcEscandell/ALPypeRL/tree/main/alpyperl/examples/cartpole_v2/CartPole_v2>`_.
 
-*CartPole-v2* example is a continuation of *v1*. In this case, your action space will be defined as an array of size 2 (which you can grow to any `n` size to suit your specific problem). The value of the indices refer to whether the force is applied from *left* (index ``0``) or *right* (index ``1``) and the intensity of each.
+*CartPole-v2* example is a continuation of *v1*. In this case, your action space will be defined as an array of size 2 (which you can grow to any `n` size to suit your specific problem). The value of the indices refer to whether the force is applied from *left* (index ``<0``) or *right* (index ``>0``) and the intensity of each.
 
 You will have to modify exactly the same pieces of the model as you did for *v1*, resulting in:
 
 * A new **action space** as shown in the code below:
 
-.. code-block:: python
+  * In java/AnyLogic:
 
-    self.action_space = spaces.Box(np.array([0, -1]), np.array([1, 0]), dtype=np.float32)
+  .. code-block:: java
 
-* And a new first part of the `takeAction(ActionSpace action)` function body:
+      ActionSpace.init()
+        .add(GymSpaces.box(-1.0, 0.0))
+        .add(GymSpaces.box(0.0, 1.0))
+        .build()
+
+  * In python:
+
+  .. code-block:: python
+
+      self.action_space = spaces.Box(np.array([0, -1]), np.array([1, 0]), dtype=np.float32)
+
+* And a new first part of the ``takeAction(RLAction action)`` function body:
 
 .. code-block:: java
 
     // Perform action
-    double[] actionArray = action.getActionArray();
-    cartPole.applyForce(actionArray[1] + actionArray[0]);
+    cartPole.applyForce(action.getDouble(1) + action.getDouble(0));
 
     // [...]
 

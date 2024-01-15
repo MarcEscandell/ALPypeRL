@@ -23,7 +23,7 @@
     <appender-ref ref="CONSOLE" />
   </root>
 
-  <logger name="com.alpyperl" level="DEBUG" additivity="true">
+  <logger name="com.alpype" level="DEBUG" additivity="true">
   </logger>
 
   <!-- Use entries like this to change the level for specific classes

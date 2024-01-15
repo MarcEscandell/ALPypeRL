@@ -19,15 +19,16 @@ The only requirements for this step is to have your trained policy located at a 
 .. code-block:: python
 
     from alpyperl.serve.rllib import launch_policy_server
-    from alpyperl.examples.cartpole_v0 import CartPoleEnv
+    from alpyperl import AnyLogicEnv
     from ray.rllib.algorithms.ppo import PPOConfig
 
 
     # Launch server
     launch_policy_server(
         policy_config=PPOConfig(),
-        env=CartPoleEnv,
-        trained_policy_loc='./resources/trained_policies/cartpole_v0/checkpoint_000010',
+        env=AnyLogicEnv,
+        trained_policy_loc='./resources/trained_policies/cartpole_v0',
+        host="0.0.0.0",
         port=3000
     )
 

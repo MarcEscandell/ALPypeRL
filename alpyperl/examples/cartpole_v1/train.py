@@ -1,7 +1,10 @@
-from alpyperl.examples.cartpole_v1 import CartPoleEnv
+from alpyperl import AnyLogicEnv
 from ray.rllib.algorithms.ppo import PPOConfig
 
+# Set checkpoint directory.
+checkpoint_dir = "./resources/trained_policies/cartpole_v1"
 
+# Initialize policy.
 policy = (
     PPOConfig()
     .rollouts(
@@ -13,25 +16,30 @@ policy = (
         num_consecutive_worker_failures_tolerance=3
     )
     .environment(
-        CartPoleEnv, 
+        AnyLogicEnv, 
         env_config={
             'run_exported_model': True,
             'exported_model_loc': './resources/exported_models/cartpole_v1',
             'show_terminals': False,
-            'verbose': False
+            'verbose': False,
+            'checkpoint_dir': checkpoint_dir,
+            'env_params': {
+                'cartMass': 1.0,
+                'poleMass': 0.1,
+                'poleLength': 0.5,
+            }
         }
     )
     .build()
 )
 
-# Perform training
-for _ in range(100):
+# Perform training.
+for _ in range(10):
     result = policy.train()
 
-# Save checkpoint
-checkpoint_dir = "./resources/trained_policies/cartpole_v1/checkpoint_000010"
+# Save policy checkpoint.
 policy.save(checkpoint_dir)
 print(f"Checkpoint saved in directory '{checkpoint_dir}'")
 
-# Close all enviornments
+# Close all enviornments.
 policy.stop()

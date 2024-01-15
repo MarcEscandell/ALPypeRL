@@ -1,5 +1,4 @@
 from alpyperl.examples.cartpole_v0.cartpole_env import CartPoleEnv
-import gymnasium as gym
 from gymnasium import register
 
 

@@ -16,8 +16,8 @@ If you are using the ``rllib`` package, you can define how many simulation insta
     policy = (
         PPOConfig()
         .rollouts(
-            num_rollout_workers=1,
-            num_envs_per_worker=1,
+            num_rollout_workers=2,
+            num_envs_per_worker=5,
         )
         .environment(
             CartPoleEnv, 

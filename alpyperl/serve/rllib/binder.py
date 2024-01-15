@@ -4,6 +4,12 @@ from fastapi import FastAPI, status
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
+import numpy as np
+from alpyperl.gym.envs import utils
+from alpyperl import BaseAnyLogicEnv
+from gymnasium import spaces
+from gymnasium.spaces.utils import unflatten, flatten
+import os
 
 
 def launch_policy_server(
@@ -42,6 +48,9 @@ def launch_policy_server(
     if env_config is None:
         env_config = {}
     env_config['server_mode_on'] = True
+    # Default checkpoint directory to 'trained_policy_loc' if not provided
+    if 'checkpoint_dir' not in env_config:
+        env_config['checkpoint_dir'] = trained_policy_loc
 
     # Re-create policy configuration with no workers and avoid launching
     # unnecessary models
@@ -54,6 +63,15 @@ def launch_policy_server(
 
     # Restore policy state from given checkpoint
     policy.restore(trained_policy_loc)
+
+    # Load observation space, so observation received from server can be parsed
+    # to the correct format
+    observation_space = utils.load_space(
+        f"{trained_policy_loc}/alpyperl_spaces/observation_space.pkl"
+    )
+    action_space = utils.load_space(
+        f"{trained_policy_loc}/alpyperl_spaces/action_space.pkl"
+    )
 
     # Initialise FastAPI application server
     app = FastAPI()
@@ -74,11 +92,23 @@ def launch_policy_server(
     @app.post("/predict")
     async def predict_next_action(observation: List[float]):
         # Check documentation at https://docs.ray.io/en/latest/serve/tutorials/rllib.html
-        action = policy.compute_single_action(observation, explore=False)
+        action = policy.compute_single_action(
+            observation=unflatten(observation_space, np.asarray(observation)),
+            explore=False
+        )
         # Format response
         response = {
             "observation": observation,
-            "action": action.tolist()
+            "action": flatten(action_space, action).tolist()
+        }
+
+        return JSONResponse(content=jsonable_encoder(response), status_code=200)
+
+    @app.get("/get_trained_policy_loc")
+    async def get_trained_policy_loc():
+        # Format response
+        response = {
+            "trained_policy_loc": os.path.abspath(trained_policy_loc)
         }
 
         return JSONResponse(content=jsonable_encoder(response), status_code=200)

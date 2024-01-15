@@ -126,10 +126,10 @@ poleMassLength = massPole * length;]]></StartupCode>
 						<Type><![CDATA[double[]]]></Type>        
 						<InitialValue Class="CodeValue">
 							<Code><![CDATA[{ 
-	uniform(-0.05, 0.05),
-	uniform(-0.05, 0.05),
-	uniform(-0.05, 0.05),
-	uniform(-0.05, 0.05)
+	uniform(-0.05, 0.05,  main.alPypeRLConnector.getRNG()),
+	uniform(-0.05, 0.05, main.alPypeRLConnector.getRNG()),
+	uniform(-0.05, 0.05, main.alPypeRLConnector.getRNG()),
+	uniform(-0.05, 0.05, main.alPypeRLConnector.getRNG())
 };]]></Code>
 						</InitialValue>
 					</Properties>
@@ -366,7 +366,7 @@ state[3] += angularVel;]]></Body>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1677632127390</Id>
 					<Name><![CDATA[getXPosition]]></Name>
-					<X>-540</X><Y>-40</Y>
+					<X>-540</X><Y>-20</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -378,7 +378,7 @@ state[3] += angularVel;]]></Body>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1677632127392</Id>
 					<Name><![CDATA[getLinearVelocity]]></Name>
-					<X>-540</X><Y>-60</Y>
+					<X>-540</X><Y>-40</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -390,7 +390,7 @@ state[3] += angularVel;]]></Body>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1677632127394</Id>
 					<Name><![CDATA[getAngle]]></Name>
-					<X>-540</X><Y>-80</Y>
+					<X>-540</X><Y>-60</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -402,27 +402,12 @@ state[3] += angularVel;]]></Body>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1677632127396</Id>
 					<Name><![CDATA[getAngularVelocity]]></Name>
-					<X>-540</X><Y>-100</Y>
+					<X>-540</X><Y>-80</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
 					<Body><![CDATA[return state[3];]]></Body>
-				</Function>
-				<Function AccessType="public" StaticFunction="false">
-					<ReturnModificator>VOID</ReturnModificator>
-					<ReturnType><![CDATA[double[]]]></ReturnType>
-					<Id>1677632127398</Id>
-					<Name><![CDATA[resetState]]></Name>
-					<X>-540</X><Y>-20</Y>
-					<Label><X>10</X><Y>0</Y></Label>
-					<PublicFlag>false</PublicFlag>
-					<PresentationFlag>true</PresentationFlag>
-					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[state[0] = uniform(-0.05, 0.05);
-state[1] = uniform(-0.05, 0.05);
-state[2] = uniform(-0.05, 0.05);
-state[3] = uniform(-0.05, 0.05);]]></Body>
 				</Function>
 				<Function AccessType="default" StaticFunction="false">
 					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
@@ -453,7 +438,7 @@ state[3] = uniform(-0.05, 0.05);]]></Body>
 					<ReturnType><![CDATA[double]]></ReturnType>
 					<Id>1677632127404</Id>
 					<Name><![CDATA[applyForce]]></Name>
-					<X>-540</X><Y>-120</Y>
+					<X>-540</X><Y>-100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -544,9 +529,9 @@ plotAngle.updateData();]]></Body>
 
 			<ContainerLinks>
 				<ContainerLink>
-					<Id>1677632193680</Id>
+					<Id>1704169302425</Id>
 					<Name><![CDATA[main]]></Name>
-					<X>250</X><Y>-20</Y>
+					<X>50</X><Y>-100</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -621,7 +606,7 @@ event]]></Text>
 				<Text>
 					<Id>1677632127426</Id>
 					<Name><![CDATA[text4]]></Name>
-					<X>-550</X><Y>-180</Y>
+					<X>-550</X><Y>-160</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1425,11 +1410,78 @@ parameters]]></Text>
 						</ParameterEditor>
 					</Properties>                 
 				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704168182641</Id>
+					<Name><![CDATA[cartMass]]></Name>
+					<X>-400</X><Y>-60</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704168182639</Id>
+							<Label><![CDATA[Cart mass]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>SEPARATE_SECTION</DelimeterType>
+							<StartSection><![CDATA[CartPole settings]]></StartSection>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704168182644</Id>
+					<Name><![CDATA[poleMass]]></Name>
+					<X>-400</X><Y>-40</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704168182642</Id>
+							<Label><![CDATA[Pole mass]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
+				<Variable Class="Parameter">
+					<Id>1704168182647</Id>
+					<Name><![CDATA[poleLength]]></Name>
+					<X>-400</X><Y>-20</Y>
+					<Label><X>10</X><Y>0</Y></Label>
+					<PublicFlag>false</PublicFlag>
+					<PresentationFlag>true</PresentationFlag>
+					<ShowLabel>true</ShowLabel>
+					<Properties SaveInSnapshot="true" ModificatorType="STATIC">
+						<Type><![CDATA[double]]></Type>
+						<UnitType><![CDATA[NONE]]></UnitType>
+						<SdArray>false</SdArray>
+						<ParameterEditor>
+							<Id>1704168182645</Id>
+							<Label><![CDATA[Pole length]]></Label>
+							<EditorContolType>TEXT_BOX</EditorContolType>
+							<MinSliderValue><![CDATA[0]]></MinSliderValue>
+							<MaxSliderValue><![CDATA[100]]></MaxSliderValue>
+							<DelimeterType>NO_DELIMETER</DelimeterType>
+						</ParameterEditor>
+					</Properties>                 
+				</Variable>
 			</Variables>
 			<Functions>
 				<Function AccessType="public" StaticFunction="false">
 					<ReturnModificator>RETURNS_VALUE</ReturnModificator>
-					<ReturnType><![CDATA[double[]]]></ReturnType>
+					<ReturnType><![CDATA[Number[]]]></ReturnType>
 					<Id>1677632127495</Id>
 					<Name><![CDATA[getObservation]]></Name>
 					<X>-210</X><Y>-60</Y>
@@ -1437,7 +1489,7 @@ parameters]]></Text>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<Body><![CDATA[return new double[] {
+					<Body><![CDATA[return new Number[] {
 	cartPole.getXPosition(),
 	cartPole.getLinearVelocity(),
 	cartPole.getAngle(),
@@ -1456,11 +1508,10 @@ parameters]]></Text>
 					<ShowLabel>true</ShowLabel>
 					<Parameter>
 						<Name><![CDATA[action]]></Name>
-						<Type><![CDATA[ActionSpace]]></Type>
+						<Type><![CDATA[RLAction]]></Type>
 					</Parameter>
 					<Body><![CDATA[// Perform action
-double[] actionArray = action.getActionArray();
-cartPole.applyForce(actionArray[1] + actionArray[0]);
+cartPole.applyForce(action.getDouble(1) + action.getDouble(0));
 
 // Check if cartpole has reached max steps
 // or has reached limits. Then end game
@@ -1534,34 +1585,72 @@ totReward += reward;]]></Body>
 
 			<EmbeddedObjects>
 				<EmbeddedObject>
-					<Id>1677632192669</Id>
-					<Name><![CDATA[cartPole]]></Name>
-					<X>-400</X><Y>-20</Y>
+					<Id>1677645912417</Id>
+					<Name><![CDATA[alPypeRLConnector]]></Name>
+					<X>-210</X><Y>-180</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<PresentationId>1677632193674</PresentationId>
+					<PresentationId>1696920935666</PresentationId>
 					<ActiveObjectClass>
-						<PackageName><![CDATA[com.alpyperl.examples.cartpole_v2]]></PackageName>
-						<ClassName><![CDATA[CartPole]]></ClassName>
+						<PackageName><![CDATA[com.alpype]]></PackageName>
+						<ClassName><![CDATA[ALPypeRLConnector]]></ClassName>
 					</ActiveObjectClass>
 					<GenericParameterSubstitute>
 						<GenericParameterSubstituteReference>
-							<PackageName><![CDATA[com.alpyperl.examples.cartpole_v2]]></PackageName>
-							<ClassName><![CDATA[CartPole]]></ClassName>
-							<ItemName><![CDATA[1677632127378]]></ItemName>
+							<PackageName><![CDATA[com.alpype]]></PackageName>
+							<ClassName><![CDATA[ALPypeRLConnector]]></ClassName>
+							<ItemName><![CDATA[1676990619206]]></ItemName>
 						</GenericParameterSubstituteReference>
 					</GenericParameterSubstitute>
 					<Parameters>
 						<Parameter>
-							<Name><![CDATA[massCart]]></Name>
+							<Name><![CDATA[rlMode]]></Name>
+							<Value Class="CodeValue">
+								<Code><![CDATA[rlMode]]></Code>
+							</Value>
 						</Parameter>
 						<Parameter>
-							<Name><![CDATA[massPole]]></Name>
+							<Name><![CDATA[serverUrl]]></Name>
+							<Value Class="CodeValue">
+								<Code><![CDATA["http://localhost:3002"]]></Code>
+							</Value>
 						</Parameter>
 						<Parameter>
-							<Name><![CDATA[length]]></Name>
+							<Name><![CDATA[connect]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[setSpaces]]></Name>
+							<Value Class="CodeValue">
+								<Code><![CDATA[true]]></Code>
+							</Value>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[observationSpace]]></Name>
+							<Value Class="CodeValue">
+								<Code><![CDATA[ObservationSpace.init()
+	.add(GymSpaces.box(-2 * 2.4, 2 * 2.4))
+	.add(GymSpaces.Box.unbounded())
+	.add(GymSpaces.box(-2 * 12 * 2 * PI / 360.0, 2 * 12 * 2 * PI / 360.0))
+	.add(GymSpaces.Box.unbounded())
+	.build()]]></Code>
+							</Value>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[actionSpace]]></Name>
+							<Value Class="CodeValue">
+								<Code><![CDATA[ActionSpace.init()
+	.add(GymSpaces.box(-1.0, 0.0))
+	.add(GymSpaces.box(0.0, 1.0))
+	.build()]]></Code>
+							</Value>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[randomnessMode]]></Name>
+						</Parameter>
+						<Parameter>
+							<Name><![CDATA[seed]]></Name>
 						</Parameter>
 					</Parameters>
 					<ReplicationFlag>false</ReplicationFlag>
@@ -1605,37 +1694,43 @@ totReward += reward;]]></Body>
 					</QuantityColumn>
 				</EmbeddedObject>
 				<EmbeddedObject>
-					<Id>1677645912417</Id>
-					<Name><![CDATA[alPypeRLConnector]]></Name>
-					<X>-210</X><Y>-180</Y>
+					<Id>1704169302421</Id>
+					<Name><![CDATA[cartPole]]></Name>
+					<X>-400</X><Y>-80</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
 					<ShowLabel>true</ShowLabel>
-					<PresentationId>1696920935666</PresentationId>
+					<PresentationId>1704169308030</PresentationId>
 					<ActiveObjectClass>
-						<PackageName><![CDATA[com.alpype]]></PackageName>
-						<ClassName><![CDATA[ALPypeRLConnector]]></ClassName>
+						<PackageName><![CDATA[com.alpyperl.examples.cartpole_v2]]></PackageName>
+						<ClassName><![CDATA[CartPole]]></ClassName>
 					</ActiveObjectClass>
 					<GenericParameterSubstitute>
 						<GenericParameterSubstituteReference>
-							<PackageName><![CDATA[com.alpype]]></PackageName>
-							<ClassName><![CDATA[ALPypeRLConnector]]></ClassName>
-							<ItemName><![CDATA[1676990619206]]></ItemName>
+							<PackageName><![CDATA[com.alpyperl.examples.cartpole_v2]]></PackageName>
+							<ClassName><![CDATA[CartPole]]></ClassName>
+							<ItemName><![CDATA[1677632127378]]></ItemName>
 						</GenericParameterSubstituteReference>
 					</GenericParameterSubstitute>
 					<Parameters>
 						<Parameter>
-							<Name><![CDATA[rlMode]]></Name>
+							<Name><![CDATA[massCart]]></Name>
 							<Value Class="CodeValue">
-								<Code><![CDATA[rlMode]]></Code>
+								<Code><![CDATA[cartMass]]></Code>
 							</Value>
 						</Parameter>
 						<Parameter>
-							<Name><![CDATA[serverUrl]]></Name>
+							<Name><![CDATA[massPole]]></Name>
+							<Value Class="CodeValue">
+								<Code><![CDATA[poleMass]]></Code>
+							</Value>
 						</Parameter>
 						<Parameter>
-							<Name><![CDATA[connect]]></Name>
+							<Name><![CDATA[length]]></Name>
+							<Value Class="CodeValue">
+								<Code><![CDATA[poleLength]]></Code>
+							</Value>
 						</Parameter>
 					</Parameters>
 					<ReplicationFlag>false</ReplicationFlag>
@@ -1868,7 +1963,7 @@ Controller]]></Text>
 				<Text>
 					<Id>1677632127531</Id>
 					<Name><![CDATA[text3]]></Name>
-					<X>-410</X><Y>-60</Y>
+					<X>-410</X><Y>-120</Y>
 					<Label><X>0</X><Y>-10</Y></Label>
 					<PublicFlag>false</PublicFlag>
 					<PresentationFlag>true</PresentationFlag>
@@ -1908,8 +2003,8 @@ Controller]]></Text>
 					<Alignment>LEFT</Alignment>
 				</Text>
 				<EmbeddedObjectPresentation>
-					<Id>1677632193674</Id>
-					<Name><![CDATA[cartPole_presentation]]></Name>
+					<Id>1696920935666</Id>
+					<Name><![CDATA[alPypeRLConnector_presentation]]></Name>
 					<X>0</X><Y>0</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -1927,8 +2022,8 @@ Controller]]></Text>
 					<Longitude>0.0</Longitude>
 				</EmbeddedObjectPresentation>
 				<EmbeddedObjectPresentation>
-					<Id>1696920935666</Id>
-					<Name><![CDATA[alPypeRLConnector_presentation]]></Name>
+					<Id>1704169308030</Id>
+					<Name><![CDATA[cartPole_presentation]]></Name>
 					<X>0</X><Y>0</Y>
 					<Label><X>10</X><Y>0</Y></Label>
 					<PublicFlag>true</PublicFlag>
@@ -2040,7 +2135,25 @@ Controller]]></Text>
 				<Parameter>
 					<ParameterName><![CDATA[rlMode]]></ParameterName>
 					<ParameterValue Class="CodeValue">
-						<Code><![CDATA[RLMode.TRAIN]]></Code>
+						<Code><![CDATA[RLMode.EVALUATE]]></Code>
+					</ParameterValue>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[cartMass]]></ParameterName>
+					<ParameterValue Class="CodeValue">
+						<Code><![CDATA[1.0]]></Code>
+					</ParameterValue>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[poleMass]]></ParameterName>
+					<ParameterValue Class="CodeValue">
+						<Code><![CDATA[0.1]]></Code>
+					</ParameterValue>
+				</Parameter>
+				<Parameter>
+					<ParameterName><![CDATA[poleLength]]></ParameterName>
+					<ParameterValue Class="CodeValue">
+						<Code><![CDATA[0.5]]></Code>
 					</ParameterValue>
 				</Parameter>
 			</Parameters>			
@@ -2054,9 +2167,9 @@ Controller]]></Text>
 			</PresentationProperties>
 			<ModelTimeProperties>
 				<StopOption><![CDATA[Stop at specified time]]></StopOption>
-				<InitialDate><![CDATA[1677600000000]]></InitialDate>	
+				<InitialDate><![CDATA[1703779200000]]></InitialDate>	
 				<InitialTime><![CDATA[0.0]]></InitialTime>	
-				<FinalDate><![CDATA[1677602000000]]></FinalDate>	
+				<FinalDate><![CDATA[1703781200000]]></FinalDate>	
 				<FinalTime><![CDATA[2000.0]]></FinalTime>	
 			</ModelTimeProperties>
 			<BypassInitialScreen>true</BypassInitialScreen>
@@ -2150,7 +2263,7 @@ Controller]]></Text>
 		<LibraryName><![CDATA[com.alpype]]></LibraryName>
 		<VersionMajor>0</VersionMajor>
 		<VersionMinor>0</VersionMinor>
-		<VersionBuild>1</VersionBuild>
+		<VersionBuild>0</VersionBuild>
     </RequiredLibraryReference>
 	<ClassPathEntry>
 		<ResourceReference>
