@@ -49,11 +49,22 @@ class ALModelLauncher():
 
     def compile_and_run(self):
         """Compile the script and execute it considering the operating system."""
-        # Generate executable file
-        self.executable_location = str(self.__create_exec_file(f'{self.os_name.lower()}.sh'))
+        # Determine file extension based on OS
+        file_extension = {
+            'Linux': '.sh',
+            'Windows': '.bat',
+            'Darwin': ''  # No extension for Mac
+        }.get(self.os_name, '')
+
+        # Adjust executable name based on OS
+        os_name_for_exec = 'mac' if self.os_name == 'Darwin' else self.os_name.lower()
+        self.executable_location = str(self.__create_exec_file(f'{os_name_for_exec}{file_extension}'))
+
         # Enclose in quotes to handle spaces
-        #quoted_executable = f"'{self.executable_location}'"
-        quoted_executable = shlex.quote(self.executable_location)
+        quoted_executable = (
+            f'"{self.executable_location}"' if self.os_name == 'Windows' 
+            else shlex.quote(self.executable_location)
+        )
 
         # Define command based on OS
         command = {
@@ -62,7 +73,7 @@ class ALModelLauncher():
                 if not self.show_terminals 
                 else ['gnome-terminal', '--', self.executable_location]
             ),
-            'Windows': [quoted_executable],
+            'Windows': quoted_executable,
             'Darwin': (
                 ['open', quoted_executable] 
                 if self.show_terminals 
@@ -77,6 +88,7 @@ class ALModelLauncher():
             start_new_session=True
         )
         self.logger.debug(f"AnyLogic model '{self.project_name}' has been successfully compiled and launched.")
+
 
 
     def close_model(self):
