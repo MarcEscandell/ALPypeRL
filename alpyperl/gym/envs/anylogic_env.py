@@ -326,6 +326,8 @@ class BaseAnyLogicEnv(gym.Env):
             if not self.server_mode_on
             else self.observation_space.sample()
         )
+        # Save alpyperl spaces to a file if they have not been saved yet.
+        self.__save_spaces_if_missing()
         # Return tuble: STATE, INFO.
         return new_state, {}
 
@@ -337,12 +339,17 @@ class BaseAnyLogicEnv(gym.Env):
 
     def close(self):
         """`[INTERNAL]` Close executables if any was created"""
-        # Before closing, save observation and action space if it has been defined in the
+        self.__save_spaces_if_missing()
+        self.anylogic_connector.close_connection()
+
+    def __save_spaces_if_missing(self):
+        """`[INTERNAL]` Save ALPypeRL spaces to a file"""
+        # Save observation and action space if it has been defined in the
         # AnyLogic model.
         # NOTE: Since there could be multiple AnyLogic models running at the
         # same time, it is necessary to create a folder first so the other instances
         # do not overwrite the file.
-        if not self.server_mode_on:
+        if not self.server_mode_on and not os.path.exists(f"{self.checkpoint_dir}/alpyperl_spaces/"):
             utils.save_space(self.observation_space, f"{self.checkpoint_dir}/alpyperl_spaces/observation_space.pkl")
             utils.save_space(self.action_space, f"{self.checkpoint_dir}/alpyperl_spaces/action_space.pkl")
             self.anylogic_model.jvm.com.alpype.RLSpace.save(
@@ -353,4 +360,4 @@ class BaseAnyLogicEnv(gym.Env):
                 self.anylogic_action_space,
                 os.path.abspath(f"{self.checkpoint_dir}/alpyperl_spaces/action_space.ser")
             )
-        self.anylogic_connector.close_connection()
+            self.logger.info(f"ALPypeRL spaces have been saved successfully at '{self.checkpoint_dir}'")

@@ -6,7 +6,7 @@ this_directory = Path(__file__).parent
 long_description = (this_directory / "README.md").read_text()
 
 setup(name='alpyperl',
-      version='1.1.1',
+      version='1.1.2',
       license='Apache License, Version 2.0',
       author='Marc Escandell Mari',
       author_email='marcescandellmari@gmail.com',
