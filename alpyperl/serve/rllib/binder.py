@@ -56,7 +56,7 @@ def launch_policy_server(
     # unnecessary models
     policy = (
         policy_config
-            .rollouts(num_rollout_workers=0)
+            .env_runners(num_env_runners=0)
             .environment(env=env, env_config=env_config)
             .build()
     )

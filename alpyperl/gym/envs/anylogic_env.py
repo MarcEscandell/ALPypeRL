@@ -240,15 +240,6 @@ class BaseAnyLogicEnv(gym.Env):
                 anylogic_model=self.anylogic_model,
                 observation_space=self.observation_space
             )
-        # Get observation state or sample if in server mode.
-        state = (
-            unflatten(
-                self.observation_space,
-                np.asanyarray(self.anylogic_model.getState(self.anylogic_observation_space))
-            )
-            if not self.server_mode_on
-            else self.observation_space.sample()
-        )
         # Run fast simulation until next action is required (which will be
         # controlled and requested from the AnyLogic model).
         if not self.server_mode_on:
@@ -271,7 +262,15 @@ class BaseAnyLogicEnv(gym.Env):
             # Pass action to AnyLogic model.
             self.anylogic_model.step(action_space)
             
-
+        # Get observation state or sample if in server mode.
+        state = (
+            unflatten(
+                self.observation_space,
+                np.asanyarray(self.anylogic_model.getState(self.anylogic_observation_space))
+            )
+            if not self.server_mode_on
+            else self.observation_space.sample()
+        )
         # Get 'current' reward (not cumulated) or dummy 0 if in server mode
         # It is assumed that reward will always be an scalar.
         reward = (

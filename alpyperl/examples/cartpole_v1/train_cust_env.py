@@ -7,13 +7,13 @@ checkpoint_dir = "./resources/trained_policies/cartpole_v1"
 # Initialize policy.
 policy = (
     PPOConfig()
-    .rollouts(
-        num_rollout_workers=2,
-        num_envs_per_worker=2
+    .env_runners(
+        num_env_runners=2,
+        num_envs_per_env_runner=2
     )
     .fault_tolerance(
-        recreate_failed_workers=True,
-        num_consecutive_worker_failures_tolerance=3
+        recreate_failed_env_runners=True,
+        num_consecutive_env_runner_failures_tolerance=3
     )
     .environment(
         CartPoleEnv, 
@@ -34,7 +34,7 @@ policy = (
 )
 
 # Perform training.
-for _ in range(10):
+for _ in range(100):
     result = policy.train()
 
 # Save policy checkpoint.

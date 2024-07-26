@@ -31,15 +31,16 @@ observation_space = spaces.Box(-high, high, dtype=np.float32)
 # Set checkpoint directory.
 checkpoint_dir = "./resources/trained_policies/cartpole_v0_custom_env"
 
+# Initialize policy.
 policy = (
     PPOConfig()
-    .rollouts(
-        num_rollout_workers=2,
-        num_envs_per_worker=2,
+    .env_runners(
+        num_env_runners=2,
+        num_envs_per_env_runner=2
     )
     .fault_tolerance(
-        recreate_failed_workers=True,
-        num_consecutive_worker_failures_tolerance=3
+        recreate_failed_env_runners=True,
+        num_consecutive_env_runner_failures_tolerance=3
     )
     .environment(
         create_custom_env(action_space, observation_space), 
@@ -59,7 +60,7 @@ policy = (
     .build()
 )
 
-for _ in range(10):
+for _ in range(100):
     result = policy.train()
 
 checkpoint_dir = policy.save(checkpoint_dir)

@@ -23,7 +23,7 @@ To begin, you must add the **ALPypeRL Connector Library** to your AnyLogic *Pale
 .. image:: images/add_new_library_anylogic_palette.png
     :alt: Add new library to AnyLogic Palette
 
-Once you have located the green cross, click on it and select *Manage Libraries…*. Then, click on the *Add* button and select the :download:`ALPypeLibrary.jar <../bin/anylogic-8.8/ALPypeLibrary.jar>` file. Note that this is a link to download a library that was generated and is **only compatible with AnyLogic 8.8.x**. There is also a link :download:`ALPypeLibrary.jar <../bin/anylogic-8.7/ALPypeLibrary.jar>`  to the library **compatible with AnyLogic 8.7.x**.
+Once you have located the green cross, click on it and select *Manage Libraries…*. Then, click on the *Add* button and select the :download:`ALPypeLibrary.jar <../bin/anylogic-8.9/ALPypeLibrary.jar>` file. Note that this is a link to download a library that was generated and is **only compatible with AnyLogic 8.9.x**. There is also a link :download:`ALPypeLibrary.jar <../bin/anylogic-8.7/ALPypeLibrary.jar>`  to the library **compatible with AnyLogic 8.7.x** and :download:`ALPypeLibrary.jar <../bin/anylogic-8.8/ALPypeLibrary.jar>` to the library **compatible with AnyLogic 8.8.x**.
 
 .. image:: images/add_new_library_anylogic_window.png
     :alt: Add new library to AnyLogic Window
